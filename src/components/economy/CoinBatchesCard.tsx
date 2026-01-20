@@ -4,7 +4,7 @@ import { Progress } from "@/components/ui/progress";
 import { Clock, Coins, AlertTriangle } from "lucide-react";
 import { useCoinBatches } from "@/hooks/useCoinBatches";
 import { formatDistanceToNow, differenceInDays } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { enUS } from "date-fns/locale";
 
 export function CoinBatchesCard() {
   const { data: batches = [], isLoading } = useCoinBatches();
@@ -22,7 +22,7 @@ export function CoinBatchesCard() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Clock className="h-5 w-5" />
-            Lotes de Coins
+            Coin Batches
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -42,12 +42,12 @@ export function CoinBatchesCard() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Clock className="h-5 w-5" />
-            Lotes de Coins
+            Coin Batches
           </CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-muted-foreground text-center py-4">
-            Você não possui lotes de coins ativos.
+            You don't have any active coin batches.
           </p>
         </CardContent>
       </Card>
@@ -59,14 +59,17 @@ export function CoinBatchesCard() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Clock className="h-5 w-5" />
-          Lotes de Coins ({batches.length})
+          Coin Batches ({batches.length})
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
         {batches.map((batch) => {
           const status = getExpirationStatus(batch.expires_at);
-          const percentUsed = ((batch.original_amount - batch.remaining_amount) / batch.original_amount) * 100;
-          
+          const percentUsed =
+            ((batch.original_amount - batch.remaining_amount) /
+              batch.original_amount) *
+            100;
+
           return (
             <div
               key={batch.id}
@@ -74,8 +77,8 @@ export function CoinBatchesCard() {
                 status === "critical"
                   ? "border-destructive/50 bg-destructive/5"
                   : status === "warning"
-                  ? "border-warning/50 bg-warning/5"
-                  : "border-border bg-muted/30"
+                    ? "border-warning/50 bg-warning/5"
+                    : "border-border bg-muted/30"
               }`}
             >
               <div className="flex items-center justify-between mb-2">
@@ -91,8 +94,8 @@ export function CoinBatchesCard() {
                     status === "critical"
                       ? "destructive"
                       : status === "warning"
-                      ? "secondary"
-                      : "outline"
+                        ? "secondary"
+                        : "outline"
                   }
                   className="text-xs"
                 >
@@ -101,18 +104,18 @@ export function CoinBatchesCard() {
                   )}
                   {formatDistanceToNow(new Date(batch.expires_at), {
                     addSuffix: true,
-                    locale: ptBR,
+                    locale: enUS,
                   })}
                 </Badge>
               </div>
-              
+
               <Progress value={100 - percentUsed} className="h-2" />
-              
+
               <div className="flex items-center justify-between mt-2 text-xs text-muted-foreground">
                 <span className="capitalize">{batch.source_type}</span>
                 <span>
-                  Expira em{" "}
-                  {new Date(batch.expires_at).toLocaleDateString("pt-BR")}
+                  Expires on{" "}
+                  {new Date(batch.expires_at).toLocaleDateString("en-US")}
                 </span>
               </div>
             </div>

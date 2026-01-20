@@ -1,7 +1,21 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Medal, TrendingUp, TrendingDown, Minus, Trophy, Gamepad2, Loader2 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Medal,
+  TrendingUp,
+  TrendingDown,
+  Minus,
+  Trophy,
+  Gamepad2,
+  Loader2,
+} from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -40,7 +54,7 @@ interface RankingEntry {
 function PositionChange({ position }: { position: number }) {
   // Simulated change for demo - in real app would track historical positions
   const change = position % 3 === 0 ? 1 : position % 3 === 1 ? -1 : 0;
-  
+
   if (change > 0) {
     return (
       <span className="flex items-center gap-0.5 text-green-500 text-xs">
@@ -62,12 +76,16 @@ function PositionChange({ position }: { position: number }) {
 
 function RankingRow({ entry, position }: { entry: RankingEntry; position: number }) {
   const isTop3 = position <= 3;
-  const winRate = entry.matches_played > 0 
-    ? Math.round((entry.wins / entry.matches_played) * 100) 
+  const winRate = entry.matches_played > 0
+    ? Math.round((entry.wins / entry.matches_played) * 100)
     : 0;
 
   return (
-    <div className={`flex items-center gap-4 p-4 rounded-lg ${isTop3 ? "bg-primary/5 border border-primary/20" : "bg-muted/30"}`}>
+    <div
+      className={`flex items-center gap-4 p-4 rounded-lg ${
+        isTop3 ? "bg-primary/5 border border-primary/20" : "bg-muted/30"
+      }`}
+    >
       {/* Position */}
       <div className="w-12 text-center">
         <span className={`text-xl font-bold ${isTop3 ? "text-primary" : ""}`}>
@@ -79,14 +97,25 @@ function RankingRow({ entry, position }: { entry: RankingEntry; position: number
       </div>
 
       {/* Player */}
-      <Link to={`/profile/${entry.profile?.id}`} className="flex items-center gap-3 flex-1 hover:text-primary transition-colors">
+      <Link
+        to={`/profile/${entry.profile?.id}`}
+        className="flex items-center gap-3 flex-1 hover:text-primary transition-colors"
+      >
         <Avatar className="h-10 w-10 rounded-lg">
-          <AvatarFallback className={`rounded-lg font-bold ${isTop3 ? "bg-primary text-primary-foreground" : "bg-muted"}`}>
-            {entry.profile?.display_name?.charAt(0) || entry.profile?.username?.charAt(0) || "?"}
+          <AvatarFallback
+            className={`rounded-lg font-bold ${
+              isTop3 ? "bg-primary text-primary-foreground" : "bg-muted"
+            }`}
+          >
+            {entry.profile?.display_name?.charAt(0) ||
+              entry.profile?.username?.charAt(0) ||
+              "?"}
           </AvatarFallback>
         </Avatar>
         <div>
-          <p className="font-medium">{entry.profile?.display_name || entry.profile?.username || "Jogador"}</p>
+          <p className="font-medium">
+            {entry.profile?.display_name || entry.profile?.username || "Player"}
+          </p>
           <p className="text-xs text-muted-foreground">
             {entry.profile?.country_code && `${entry.profile.country_code} • `}
             {entry.game_mode?.name}
@@ -97,15 +126,17 @@ function RankingRow({ entry, position }: { entry: RankingEntry; position: number
       {/* Stats */}
       <div className="hidden md:block text-center w-20">
         <p className="text-lg font-bold">{Math.round(Number(entry.rating))}</p>
-        <p className="text-xs text-muted-foreground">±{Math.round(Number(entry.uncertainty))}</p>
+        <p className="text-xs text-muted-foreground">
+          ±{Math.round(Number(entry.uncertainty))}
+        </p>
       </div>
       <div className="hidden md:block text-center w-16">
         <p className="font-medium">{entry.matches_played}</p>
-        <p className="text-xs text-muted-foreground">jogos</p>
+        <p className="text-xs text-muted-foreground">matches</p>
       </div>
       <div className="hidden md:block text-center w-16">
         <p className="font-medium">{winRate}%</p>
-        <p className="text-xs text-muted-foreground">vitórias</p>
+        <p className="text-xs text-muted-foreground">wins</p>
       </div>
 
       {/* Wins */}
@@ -126,11 +157,17 @@ export default function Rankings() {
   const { data: games } = useGames();
   const { data: countries } = useCountries();
 
-  const filteredRankings = rankings?.filter(r => {
-    if (selectedGame !== "all" && r.game_mode?.games?.slug !== selectedGame) return false;
-    if (selectedCountry !== "all" && r.profile?.country_code !== selectedCountry) return false;
-    return true;
-  }) || [];
+  const filteredRankings =
+    rankings?.filter((r) => {
+      if (selectedGame !== "all" && r.game_mode?.games?.slug !== selectedGame)
+        return false;
+      if (
+        selectedCountry !== "all" &&
+        r.profile?.country_code !== selectedCountry
+      )
+        return false;
+      return true;
+    }) || [];
 
   return (
     <div className="space-y-6">
@@ -141,7 +178,9 @@ export default function Rankings() {
             <Medal className="h-6 w-6 text-primary" />
             Rankings
           </h1>
-          <p className="text-muted-foreground">Classificações e estatísticas globais</p>
+          <p className="text-muted-foreground">
+            Global leaderboards and statistics
+          </p>
         </div>
       </div>
 
@@ -150,25 +189,32 @@ export default function Rankings() {
         <Select value={selectedGame} onValueChange={setSelectedGame}>
           <SelectTrigger className="w-40">
             <Gamepad2 className="h-4 w-4 mr-2" />
-            <SelectValue placeholder="Jogo" />
+            <SelectValue placeholder="Game" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Todos</SelectItem>
-            {games?.map(game => (
-              <SelectItem key={game.id} value={game.slug}>{game.name}</SelectItem>
+            <SelectItem value="all">All</SelectItem>
+            {games?.map((game) => (
+              <SelectItem key={game.id} value={game.slug}>
+                {game.name}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
 
         <Select value={selectedCountry} onValueChange={setSelectedCountry}>
           <SelectTrigger className="w-40">
-            <SelectValue placeholder="País" />
+            <SelectValue placeholder="Country" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">🌍 Todos</SelectItem>
-            {countries?.map(country => (
+            <SelectItem value="all">🌍 All</SelectItem>
+            {countries?.map((country) => (
               <SelectItem key={country.id} value={country.code}>
-                {country.code === "BR" ? "🇧🇷" : country.code === "PT" ? "🇵🇹" : "🏳️"} {country.name}
+                {country.code === "BR"
+                  ? "🇧🇷"
+                  : country.code === "PT"
+                    ? "🇵🇹"
+                    : "🏳️"}{" "}
+                {country.name}
               </SelectItem>
             ))}
           </SelectContent>
@@ -178,9 +224,9 @@ export default function Rankings() {
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
-          <TabsTrigger value="players">Jogadores</TabsTrigger>
-          <TabsTrigger value="teams">Times</TabsTrigger>
-          <TabsTrigger value="organizations">Organizações</TabsTrigger>
+          <TabsTrigger value="players">Players</TabsTrigger>
+          <TabsTrigger value="teams">Teams</TabsTrigger>
+          <TabsTrigger value="organizations">Organizations</TabsTrigger>
         </TabsList>
 
         <TabsContent value="players" className="mt-6">
@@ -188,10 +234,12 @@ export default function Rankings() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div>
-                  <CardTitle>Ranking de Jogadores</CardTitle>
-                  <CardDescription>Classificação baseada em rating com mínimo de 10 jogos</CardDescription>
+                  <CardTitle>Player Rankings</CardTitle>
+                  <CardDescription>
+                    Rankings based on rating with a minimum of 10 matches
+                  </CardDescription>
                 </div>
-                <Badge variant="outline">Atualizado agora</Badge>
+                <Badge variant="outline">Updated just now</Badge>
               </div>
             </CardHeader>
             <CardContent>
@@ -202,19 +250,28 @@ export default function Rankings() {
               ) : filteredRankings.length > 0 ? (
                 <div className="space-y-2">
                   {filteredRankings.map((entry, index) => (
-                    <RankingRow key={entry.id} entry={entry} position={index + 1} />
+                    <RankingRow
+                      key={entry.id}
+                      entry={entry}
+                      position={index + 1}
+                    />
                   ))}
                 </div>
               ) : (
                 <div className="flex flex-col items-center justify-center py-12">
                   <Medal className="h-12 w-12 text-muted-foreground/50 mb-4" />
-                  <p className="text-muted-foreground">Nenhum jogador no ranking ainda</p>
-                  <p className="text-sm text-muted-foreground">Jogadores precisam de no mínimo 10 partidas</p>
+                  <p className="text-muted-foreground">
+                    No players on the leaderboard yet
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Players must play at least 10 matches
+                  </p>
                 </div>
               )}
+
               {filteredRankings.length >= 50 && (
                 <div className="mt-6 text-center">
-                  <Button variant="outline">Carregar mais</Button>
+                  <Button variant="outline">Load more</Button>
                 </div>
               )}
             </CardContent>
@@ -226,7 +283,7 @@ export default function Rankings() {
             <CardContent className="flex flex-col items-center justify-center py-12">
               <Medal className="h-12 w-12 text-muted-foreground/50 mb-4" />
               <p className="text-muted-foreground text-center">
-                Ranking de times em breve
+                Team rankings coming soon
               </p>
             </CardContent>
           </Card>
@@ -237,7 +294,7 @@ export default function Rankings() {
             <CardContent className="flex flex-col items-center justify-center py-12">
               <Medal className="h-12 w-12 text-muted-foreground/50 mb-4" />
               <p className="text-muted-foreground text-center">
-                Ranking de organizações em breve
+                Organization rankings coming soon
               </p>
             </CardContent>
           </Card>

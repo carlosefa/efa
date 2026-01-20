@@ -28,20 +28,20 @@ interface SidebarProps {
 }
 
 const navItems = [
-  { label: "Dashboard", href: "/dashboard", icon: Home },
-  { label: "Torneios", href: "/tournaments", icon: Trophy },
-  { label: "Times", href: "/teams", icon: Users },
-  { label: "Partidas", href: "/matches", icon: Swords },
-  { label: "Amistosos", href: "/friendlies", icon: Gamepad2 },
-  { label: "Rankings", href: "/rankings", icon: Medal },
-  { label: "Conquistas", href: "/achievements", icon: Award },
   { label: "Chat", href: "/chat", icon: MessageCircle },
-  { label: "Carteira", href: "/wallet", icon: Wallet },
-  { label: "Meu Perfil", href: "/profile", icon: User },
+  { label: "Tournaments", href: "/tournaments", icon: Trophy },
+  { label: "Teams", href: "/teams", icon: Users },
+  { label: "Matches", href: "/matches", icon: Swords },
+  { label: "Friendlies", href: "/friendlies", icon: Gamepad2 },
+  { label: "Rankings", href: "/rankings", icon: Medal },
+  { label: "Achievements", href: "/achievements", icon: Award },
+   { label: "Wallet", href: "/wallet", icon: Wallet },
+  { label: "Profile", href: "/profile", icon: User },
+  { label: "Dashboard", href: "/dashboard", icon: Home },
 ];
 
 const adminItems = [
-  { label: "Admin País", href: "/admin/country", icon: Shield },
+  { label: "Panel", href: "/admin/country", icon: Shield },
 ];
 
 export function Sidebar({

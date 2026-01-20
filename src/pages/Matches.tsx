@@ -1,6 +1,14 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Swords, Filter, Calendar, Clock, AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
+import {
+  Swords,
+  Filter,
+  Calendar,
+  Clock,
+  AlertCircle,
+  CheckCircle2,
+  Loader2,
+} from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -8,14 +16,21 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useMatches } from "@/hooks/useMatches";
 
-const statusConfig: Record<string, { label: string; icon: React.ComponentType<{ className?: string }>; variant: "default" | "secondary" | "destructive" | "outline" }> = {
-  scheduled: { label: "Agendada", icon: Calendar, variant: "secondary" },
-  pending_report: { label: "Aguardando Reporte", icon: Clock, variant: "outline" },
-  pending_confirm: { label: "Aguardando Confirmação", icon: Clock, variant: "default" },
-  disputed: { label: "Em Disputa", icon: AlertCircle, variant: "destructive" },
-  finished: { label: "Finalizada", icon: CheckCircle2, variant: "outline" },
-  walkover: { label: "W.O.", icon: AlertCircle, variant: "destructive" },
-  cancelled: { label: "Cancelada", icon: AlertCircle, variant: "destructive" },
+const statusConfig: Record<
+  string,
+  {
+    label: string;
+    icon: React.ComponentType<{ className?: string }>;
+    variant: "default" | "secondary" | "destructive" | "outline";
+  }
+> = {
+  scheduled: { label: "Scheduled", icon: Calendar, variant: "secondary" },
+  pending_report: { label: "Waiting for Report", icon: Clock, variant: "outline" },
+  pending_confirm: { label: "Waiting for Confirmation", icon: Clock, variant: "default" },
+  disputed: { label: "Disputed", icon: AlertCircle, variant: "destructive" },
+  finished: { label: "Finished", icon: CheckCircle2, variant: "outline" },
+  walkover: { label: "Walkover", icon: AlertCircle, variant: "destructive" },
+  cancelled: { label: "Cancelled", icon: AlertCircle, variant: "destructive" },
 };
 
 interface MatchWithTeams {
@@ -26,14 +41,21 @@ interface MatchWithTeams {
   played_at: string | null;
   home_team?: { id: string; name: string; tag: string } | null;
   away_team?: { id: string; name: string; tag: string } | null;
-  fixture?: { round: number; stage?: { tournament?: { name: string } | null } | null } | null;
+  fixture?: {
+    round: number;
+    stage?: { tournament?: { name: string } | null } | null;
+  } | null;
 }
 
 function MatchCard({ match }: { match: MatchWithTeams }) {
-  const status = statusConfig[match.status] || { label: match.status, icon: Clock, variant: "outline" as const };
+  const status = statusConfig[match.status] || {
+    label: match.status,
+    icon: Clock,
+    variant: "outline" as const,
+  };
   const StatusIcon = status.icon;
   const isFinished = match.status === "finished" || match.status === "pending_confirm";
-  const tournamentName = match.fixture?.stage?.tournament?.name || "Torneio";
+  const tournamentName = match.fixture?.stage?.tournament?.name || "Tournament";
   const round = match.fixture?.round || 1;
 
   return (
@@ -57,7 +79,7 @@ function MatchCard({ match }: { match: MatchWithTeams }) {
               </AvatarFallback>
             </Avatar>
             <div>
-              <p className="font-medium">{match.home_team?.name || "Time Casa"}</p>
+              <p className="font-medium">{match.home_team?.name || "Home Team"}</p>
               <p className="text-xs text-muted-foreground">[{match.home_team?.tag}]</p>
             </div>
           </div>
@@ -79,7 +101,10 @@ function MatchCard({ match }: { match: MatchWithTeams }) {
                 <p className="text-lg font-medium">VS</p>
                 {match.played_at && (
                   <p className="text-xs text-muted-foreground">
-                    {new Date(match.played_at).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
+                    {new Date(match.played_at).toLocaleTimeString("en-US", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
                   </p>
                 )}
               </div>
@@ -89,7 +114,7 @@ function MatchCard({ match }: { match: MatchWithTeams }) {
           {/* Away Team */}
           <div className="flex items-center gap-3 flex-1 justify-end text-right">
             <div>
-              <p className="font-medium">{match.away_team?.name || "Time Fora"}</p>
+              <p className="font-medium">{match.away_team?.name || "Away Team"}</p>
               <p className="text-xs text-muted-foreground">[{match.away_team?.tag}]</p>
             </div>
             <Avatar className="h-12 w-12 rounded-lg">
@@ -101,9 +126,9 @@ function MatchCard({ match }: { match: MatchWithTeams }) {
         </div>
 
         <div className="flex items-center justify-between pt-3 border-t border-border">
-          <span className="text-xs text-muted-foreground">Rodada {round}</span>
+          <span className="text-xs text-muted-foreground">Round {round}</span>
           <Button asChild variant="ghost" size="sm">
-            <Link to={`/matches/${match.id}`}>Ver detalhes</Link>
+            <Link to={`/matches/${match.id}`}>View details</Link>
           </Button>
         </div>
       </CardContent>
@@ -115,13 +140,14 @@ export default function Matches() {
   const [activeTab, setActiveTab] = useState("all");
   const { data: matches, isLoading } = useMatches();
 
-  const filteredMatches = matches?.filter((m) => {
-    if (activeTab === "all") return true;
-    if (activeTab === "pending") return ["pending_report", "pending_confirm"].includes(m.status);
-    if (activeTab === "disputed") return m.status === "disputed";
-    if (activeTab === "finished") return m.status === "finished";
-    return m.status === activeTab;
-  }) || [];
+  const filteredMatches =
+    matches?.filter((m) => {
+      if (activeTab === "all") return true;
+      if (activeTab === "pending") return ["pending_report", "pending_confirm"].includes(m.status);
+      if (activeTab === "disputed") return m.status === "disputed";
+      if (activeTab === "finished") return m.status === "finished";
+      return m.status === activeTab;
+    }) || [];
 
   return (
     <div className="space-y-6">
@@ -130,24 +156,24 @@ export default function Matches() {
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
             <Swords className="h-6 w-6 text-primary" />
-            Partidas
+            Matches
           </h1>
-          <p className="text-muted-foreground">Acompanhe e gerencie suas partidas</p>
+          <p className="text-muted-foreground">Track and manage your matches</p>
         </div>
         <Button variant="outline">
           <Filter className="h-4 w-4 mr-2" />
-          Filtros
+          Filters
         </Button>
       </div>
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
-          <TabsTrigger value="all">Todas</TabsTrigger>
-          <TabsTrigger value="scheduled">Agendadas</TabsTrigger>
-          <TabsTrigger value="pending">Pendentes</TabsTrigger>
-          <TabsTrigger value="disputed">Em Disputa</TabsTrigger>
-          <TabsTrigger value="finished">Finalizadas</TabsTrigger>
+          <TabsTrigger value="all">All</TabsTrigger>
+          <TabsTrigger value="scheduled">Scheduled</TabsTrigger>
+          <TabsTrigger value="pending">Pending</TabsTrigger>
+          <TabsTrigger value="disputed">Disputed</TabsTrigger>
+          <TabsTrigger value="finished">Finished</TabsTrigger>
         </TabsList>
 
         <TabsContent value={activeTab} className="mt-6">
@@ -165,9 +191,7 @@ export default function Matches() {
             <Card>
               <CardContent className="flex flex-col items-center justify-center py-12">
                 <Swords className="h-12 w-12 text-muted-foreground/50 mb-4" />
-                <p className="text-muted-foreground text-center">
-                  Nenhuma partida encontrada
-                </p>
+                <p className="text-muted-foreground text-center">No matches found</p>
               </CardContent>
             </Card>
           )}

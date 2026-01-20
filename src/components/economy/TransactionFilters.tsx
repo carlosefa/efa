@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/popover";
 import { CalendarIcon, Download, X } from "lucide-react";
 import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { enUS } from "date-fns/locale";
 
 interface TransactionFiltersProps {
   onFilterChange: (filters: TransactionFilters) => void;
@@ -30,13 +30,16 @@ export interface TransactionFilters {
 }
 
 const transactionTypes = [
-  { value: "all", label: "Todos" },
-  { value: "credit", label: "Créditos" },
-  { value: "debit", label: "Débitos" },
-  { value: "expired", label: "Expirados" },
+  { value: "all", label: "All" },
+  { value: "credit", label: "Credits" },
+  { value: "debit", label: "Debits" },
+  { value: "expired", label: "Expired" },
 ];
 
-export function TransactionFilters({ onFilterChange, onExport }: TransactionFiltersProps) {
+export function TransactionFilters({
+  onFilterChange,
+  onExport,
+}: TransactionFiltersProps) {
   const [type, setType] = useState("all");
   const [dateFrom, setDateFrom] = useState<Date>();
   const [dateTo, setDateTo] = useState<Date>();
@@ -69,7 +72,7 @@ export function TransactionFilters({ onFilterChange, onExport }: TransactionFilt
     <div className="flex flex-wrap items-center gap-3 p-4 bg-muted/30 rounded-lg">
       <Select value={type} onValueChange={handleTypeChange}>
         <SelectTrigger className="w-[140px]">
-          <SelectValue placeholder="Tipo" />
+          <SelectValue placeholder="Type" />
         </SelectTrigger>
         <SelectContent>
           {transactionTypes.map((t) => (
@@ -84,7 +87,7 @@ export function TransactionFilters({ onFilterChange, onExport }: TransactionFilt
         <PopoverTrigger asChild>
           <Button variant="outline" className="w-[140px] justify-start">
             <CalendarIcon className="mr-2 h-4 w-4" />
-            {dateFrom ? format(dateFrom, "dd/MM/yy") : "De"}
+            {dateFrom ? format(dateFrom, "MM/dd/yy") : "From"}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0">
@@ -92,7 +95,7 @@ export function TransactionFilters({ onFilterChange, onExport }: TransactionFilt
             mode="single"
             selected={dateFrom}
             onSelect={handleDateFromChange}
-            locale={ptBR}
+            locale={enUS}
           />
         </PopoverContent>
       </Popover>
@@ -101,7 +104,7 @@ export function TransactionFilters({ onFilterChange, onExport }: TransactionFilt
         <PopoverTrigger asChild>
           <Button variant="outline" className="w-[140px] justify-start">
             <CalendarIcon className="mr-2 h-4 w-4" />
-            {dateTo ? format(dateTo, "dd/MM/yy") : "Até"}
+            {dateTo ? format(dateTo, "MM/dd/yy") : "To"}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0">
@@ -109,7 +112,7 @@ export function TransactionFilters({ onFilterChange, onExport }: TransactionFilt
             mode="single"
             selected={dateTo}
             onSelect={handleDateToChange}
-            locale={ptBR}
+            locale={enUS}
           />
         </PopoverContent>
       </Popover>
@@ -117,24 +120,21 @@ export function TransactionFilters({ onFilterChange, onExport }: TransactionFilt
       {hasFilters && (
         <Button variant="ghost" size="sm" onClick={clearFilters}>
           <X className="h-4 w-4 mr-1" />
-          Limpar
+          Clear
         </Button>
       )}
 
       <div className="flex-1" />
 
-      {hasFilters && (
-        <Badge variant="secondary">
-          Filtros ativos
-        </Badge>
-      )}
+      {hasFilters && <Badge variant="secondary">Active filters</Badge>}
 
       {onExport && (
         <Button variant="outline" size="sm" onClick={onExport}>
           <Download className="h-4 w-4 mr-2" />
-          Exportar
+          Export
         </Button>
       )}
     </div>
   );
 }
+

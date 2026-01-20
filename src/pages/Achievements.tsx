@@ -3,10 +3,24 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { useMyAchievementsProgress, tierColors, tierBorderColors } from "@/hooks/useAchievements";
-import { 
-  Trophy, Medal, Award, Crown, Flame, Users, Shield, 
-  Gamepad2, Handshake, Lock, CheckCircle2, Coins
+import {
+  useMyAchievementsProgress,
+  tierColors,
+  tierBorderColors,
+} from "@/hooks/useAchievements";
+import {
+  Trophy,
+  Medal,
+  Award,
+  Crown,
+  Flame,
+  Users,
+  Shield,
+  Gamepad2,
+  Handshake,
+  Lock,
+  CheckCircle2,
+  Coins,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -23,20 +37,20 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
 };
 
 const categoryLabels: Record<string, string> = {
-  wins: "Vitórias",
-  tournaments: "Torneios",
-  matches: "Partidas",
-  streaks: "Sequências",
+  wins: "Wins",
+  tournaments: "Tournaments",
+  matches: "Matches",
+  streaks: "Streaks",
   social: "Social",
-  general: "Geral",
+  general: "General",
 };
 
 const tierLabels: Record<string, string> = {
   bronze: "Bronze",
-  silver: "Prata",
-  gold: "Ouro",
-  platinum: "Platina",
-  diamond: "Diamante",
+  silver: "Silver",
+  gold: "Gold",
+  platinum: "Platinum",
+  diamond: "Diamond",
 };
 
 export default function Achievements() {
@@ -45,9 +59,10 @@ export default function Achievements() {
 
   const categories = ["all", ...new Set(all.map((a) => a.category))];
 
-  const filteredAchievements = selectedCategory === "all" 
-    ? all 
-    : all.filter((a) => a.category === selectedCategory);
+  const filteredAchievements =
+    selectedCategory === "all"
+      ? all
+      : all.filter((a) => a.category === selectedCategory);
 
   const totalCoinsEarned = unlocked.reduce((sum, a) => sum + a.efa_coins_reward, 0);
 
@@ -55,10 +70,8 @@ export default function Achievements() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold">Conquistas</h1>
-        <p className="text-muted-foreground">
-          Complete desafios e ganhe EFA Coins
-        </p>
+        <h1 className="text-3xl font-bold">Achievements</h1>
+        <p className="text-muted-foreground">Complete challenges and earn EFA Coins</p>
       </div>
 
       {/* Stats */}
@@ -67,28 +80,28 @@ export default function Achievements() {
           <CardContent className="p-4 text-center">
             <Trophy className="h-8 w-8 mx-auto mb-2 text-yellow-500" />
             <p className="text-2xl font-bold">{unlocked.length}</p>
-            <p className="text-sm text-muted-foreground">Desbloqueadas</p>
+            <p className="text-sm text-muted-foreground">Unlocked</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
             <Flame className="h-8 w-8 mx-auto mb-2 text-orange-500" />
             <p className="text-2xl font-bold">{inProgress.length}</p>
-            <p className="text-sm text-muted-foreground">Em Progresso</p>
+            <p className="text-sm text-muted-foreground">In Progress</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
             <Lock className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
             <p className="text-2xl font-bold">{locked.length}</p>
-            <p className="text-sm text-muted-foreground">Bloqueadas</p>
+            <p className="text-sm text-muted-foreground">Locked</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
             <Coins className="h-8 w-8 mx-auto mb-2 text-primary" />
             <p className="text-2xl font-bold">{totalCoinsEarned}</p>
-            <p className="text-sm text-muted-foreground">Coins Ganhos</p>
+            <p className="text-sm text-muted-foreground">Coins Earned</p>
           </CardContent>
         </Card>
       </div>
@@ -96,12 +109,14 @@ export default function Achievements() {
       {/* Category Tabs */}
       <Tabs value={selectedCategory} onValueChange={setSelectedCategory}>
         <TabsList className="flex-wrap h-auto">
-          <TabsTrigger value="all">Todas</TabsTrigger>
-          {categories.filter(c => c !== "all").map((category) => (
-            <TabsTrigger key={category} value={category}>
-              {categoryLabels[category] || category}
-            </TabsTrigger>
-          ))}
+          <TabsTrigger value="all">All</TabsTrigger>
+          {categories
+            .filter((c) => c !== "all")
+            .map((category) => (
+              <TabsTrigger key={category} value={category}>
+                {categoryLabels[category] || category}
+              </TabsTrigger>
+            ))}
         </TabsList>
 
         <TabsContent value={selectedCategory} className="mt-6">
@@ -114,31 +129,35 @@ export default function Achievements() {
               );
 
               return (
-                <Card 
+                <Card
                   key={achievement.id}
                   className={cn(
                     "relative overflow-hidden transition-all",
-                    achievement.isUnlocked 
-                      ? `border-2 ${tierBorderColors[achievement.tier]}` 
+                    achievement.isUnlocked
+                      ? `border-2 ${tierBorderColors[achievement.tier]}`
                       : "opacity-75"
                   )}
                 >
                   {achievement.isUnlocked && (
-                    <div className={cn(
-                      "absolute top-0 right-0 w-24 h-24 -mr-8 -mt-8 rounded-full opacity-20 bg-gradient-to-br",
-                      tierColors[achievement.tier]
-                    )} />
+                    <div
+                      className={cn(
+                        "absolute top-0 right-0 w-24 h-24 -mr-8 -mt-8 rounded-full opacity-20 bg-gradient-to-br",
+                        tierColors[achievement.tier]
+                      )}
+                    />
                   )}
-                  
+
                   <CardContent className="p-4">
                     <div className="flex gap-4">
                       {/* Icon */}
-                      <div className={cn(
-                        "w-14 h-14 rounded-lg flex items-center justify-center flex-shrink-0",
-                        achievement.isUnlocked 
-                          ? `bg-gradient-to-br ${tierColors[achievement.tier]}` 
-                          : "bg-muted"
-                      )}>
+                      <div
+                        className={cn(
+                          "w-14 h-14 rounded-lg flex items-center justify-center flex-shrink-0",
+                          achievement.isUnlocked
+                            ? `bg-gradient-to-br ${tierColors[achievement.tier]}`
+                            : "bg-muted"
+                        )}
+                      >
                         {achievement.isUnlocked ? (
                           <Icon className="h-7 w-7 text-white" />
                         ) : (
@@ -190,7 +209,7 @@ export default function Achievements() {
             <Card>
               <CardContent className="p-12 text-center">
                 <Trophy className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                <p className="text-muted-foreground">Nenhuma conquista nesta categoria</p>
+                <p className="text-muted-foreground">No achievements in this category</p>
               </CardContent>
             </Card>
           )}

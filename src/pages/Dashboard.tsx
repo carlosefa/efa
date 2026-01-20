@@ -1,60 +1,137 @@
 import { Link } from "react-router-dom";
-import { Trophy, Users, Swords, TrendingUp, Calendar, Bell, Plus, Loader2 } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Trophy,
+  Users,
+  Swords,
+  TrendingUp,
+  Calendar,
+  Bell,
+  Loader2,
+  ArrowRight,
+  Target,
+  Home,
+} from "lucide-react";
+
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfile, useNotifications, useRankings } from "@/hooks/useProfile";
 import { useMyTeams } from "@/hooks/useTeams";
 import { useMyTournaments } from "@/hooks/useTournaments";
 import { useMatches } from "@/hooks/useMatches";
+import { useLanguage } from "@/contexts/LanguageContext";
+
+/**
+ * ✅ Correção: NÃO renderizar Sidebar aqui.
+ * Você já tem um layout global com menu (Sidebar) envolvendo as páginas.
+ * Então este arquivo deve conter SOMENTE o conteúdo do Dashboard.
+ * Assim não duplica menu.
+ */
 
 export default function Dashboard() {
   const { user } = useAuth();
+  const { language } = useLanguage();
+
   const { data: profile } = useProfile(user?.id);
   const { data: myTeams, isLoading: loadingTeams } = useMyTeams();
-  const { data: myTournaments, isLoading: loadingTournaments } = useMyTournaments();
+  const { data: myTournaments, isLoading: loadingTournaments } =
+    useMyTournaments();
   const { data: matches, isLoading: loadingMatches } = useMatches();
   const { data: notifications } = useNotifications();
   const { data: rankings } = useRankings({ limit: 10 });
 
-  const unreadNotifications = notifications?.filter(n => !n.read_at) || [];
-  const upcomingMatches = matches?.filter(m => 
-    ["scheduled", "pending_report", "pending_confirm"].includes(m.status)
-  ).slice(0, 5) || [];
-  
-  const myRanking = rankings?.findIndex(r => r.profile?.id === user?.id);
-  const rankPosition = myRanking !== undefined && myRanking >= 0 ? myRanking + 1 : null;
+  const unreadNotifications = notifications?.filter((n) => !n.read_at) || [];
+
+  const upcomingMatches =
+    matches
+      ?.filter((m) =>
+        ["scheduled", "pending_report", "pending_confirm"].includes(m.status)
+      )
+      .slice(0, 5) || [];
+
+  // ⚠️ Preview de Top 10 (limit:10). Não é rank global real.
+  const myTop10Index = rankings?.findIndex((r) => r.profile?.id === user?.id);
+  const top10Position =
+    myTop10Index !== undefined && myTop10Index >= 0 ? myTop10Index + 1 : null;
+
+  const hasTeam = (myTeams?.length || 0) > 0;
+  const hasTournament = (myTournaments?.length || 0) > 0;
+  const hasPendingMatch = upcomingMatches.length > 0;
+
+  const role =
+    (profile as any)?.role || (user as any)?.role || (profile as any)?.type;
+
+  const canCreateTournament =
+    role === "SUPER_ADMIN" ||
+    role === "ADMIN" ||
+    role === "MODERATOR" ||
+    role === "ORGANIZER";
+
+  const locale =
+    language === "pt-BR" ? "pt-BR" : language === "en" ? "en-US" : language;
+
+  const formatNotifDate = (iso: string) => {
+    try {
+      return new Date(iso).toLocaleString(locale, {
+        day: "2-digit",
+        month: "short",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    } catch {
+      return new Date(iso).toLocaleString("en-US", {
+        day: "2-digit",
+        month: "short",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    }
+  };
+
+  // ✅ Header CTA: remove redundância do Create Team.
+  const primaryCta = {
+    label: "Back to Home",
+    href: "/",
+    icon: Home,
+  };
 
   const stats = [
-    { 
-      label: "Meus Torneios", 
-      value: myTournaments?.length || 0, 
-      icon: Trophy, 
+    {
+      label: "My Tournaments",
+      value: myTournaments?.length || 0,
+      icon: Trophy,
       href: "/tournaments",
-      loading: loadingTournaments 
+      loading: loadingTournaments,
     },
-    { 
-      label: "Meus Times", 
-      value: myTeams?.length || 0, 
-      icon: Users, 
+    {
+      label: "My Teams",
+      value: myTeams?.length || 0,
+      icon: Users,
       href: "/teams",
-      loading: loadingTeams 
+      loading: loadingTeams,
     },
-    { 
-      label: "Partidas Pendentes", 
-      value: upcomingMatches.length, 
-      icon: Swords, 
+    {
+      label: "Pending Matches",
+      value: upcomingMatches.length,
+      icon: Swords,
       href: "/matches",
-      loading: loadingMatches 
+      loading: loadingMatches,
     },
-    { 
-      label: "Ranking Global", 
-      value: rankPosition ? `#${rankPosition}` : "-", 
-      icon: TrendingUp, 
+    {
+      label: "Top 10 Preview",
+      value: top10Position ? `#${top10Position}` : "Unranked",
+      icon: TrendingUp,
       href: "/rankings",
-      loading: false 
+      loading: false,
     },
   ];
 
@@ -65,16 +142,51 @@ export default function Dashboard() {
         <div>
           <h1 className="text-2xl font-bold">Dashboard</h1>
           <p className="text-muted-foreground">
-            Bem-vindo de volta, {profile?.display_name || profile?.username || "jogador"}!
+            Welcome back, {profile?.display_name || profile?.username || "player"}
+            !
           </p>
         </div>
+
         <Button asChild>
-          <Link to="/tournaments/create">
-            <Plus className="h-4 w-4 mr-2" />
-            Criar Torneio
+          <Link to={primaryCta.href}>
+            <primaryCta.icon className="h-4 w-4 mr-2" />
+            {primaryCta.label}
           </Link>
         </Button>
       </div>
+
+      {/* Quick Progress */}
+      <Card className="border-primary/20">
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-2 text-base">
+            <Target className="h-5 w-5 text-primary" />
+            Next steps
+          </CardTitle>
+          <CardDescription>
+            Small goals that unlock your competitive journey.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge variant="secondary">Profile ✅</Badge>
+            <Badge variant={hasTeam ? "secondary" : "default"}>
+              Team {hasTeam ? "✅" : "⏳"}
+            </Badge>
+            <Badge variant={hasTournament ? "secondary" : "outline"}>
+              First Tournament {hasTournament ? "✅" : "⏳"}
+            </Badge>
+            <Badge variant={hasPendingMatch ? "default" : "outline"}>
+              Match Room {hasPendingMatch ? "⏳" : "—"}
+            </Badge>
+          </div>
+
+          <Button asChild variant="outline" size="sm" className="mt-2 sm:mt-0">
+            <Link to={primaryCta.href} className="inline-flex items-center gap-2">
+              Continue <ArrowRight className="h-4 w-4" />
+            </Link>
+          </Button>
+        </CardContent>
+      </Card>
 
       {/* Stats Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -95,6 +207,11 @@ export default function Dashboard() {
                   ) : (
                     <div className="text-2xl font-bold">{stat.value}</div>
                   )}
+                  {stat.label === "Top 10 Preview" && (
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      Your global rank will appear once rating is available.
+                    </p>
+                  )}
                 </CardContent>
               </Card>
             </Link>
@@ -111,12 +228,12 @@ export default function Dashboard() {
               <div>
                 <CardTitle className="flex items-center gap-2">
                   <Calendar className="h-5 w-5 text-primary" />
-                  Próximas Partidas
+                  Upcoming Matches
                 </CardTitle>
-                <CardDescription>Suas partidas pendentes</CardDescription>
+                <CardDescription>Your pending fixtures</CardDescription>
               </div>
               <Button asChild variant="outline" size="sm">
-                <Link to="/matches">Ver todas</Link>
+                <Link to="/matches">View all</Link>
               </Button>
             </div>
           </CardHeader>
@@ -148,18 +265,27 @@ export default function Dashboard() {
                       </div>
                       <div>
                         <p className="font-medium text-sm">
-                          {(match as any).home_team?.name || "Time 1"} vs {(match as any).away_team?.name || "Time 2"}
+                          {(match as any).home_team?.name || "Team 1"} vs{" "}
+                          {(match as any).away_team?.name || "Team 2"}
                         </p>
                         <p className="text-xs text-muted-foreground">
-                          {(match as any).fixture?.stage?.tournament?.name || "Torneio"}
+                          {(match as any).fixture?.stage?.tournament?.name ||
+                            "Tournament"}
                         </p>
                       </div>
                     </div>
-                    <Badge 
-                      variant={match.status === "pending_confirm" ? "default" : "secondary"}
+                    <Badge
+                      variant={
+                        match.status === "pending_confirm"
+                          ? "default"
+                          : "secondary"
+                      }
                     >
-                      {match.status === "pending_confirm" ? "Confirmar" : 
-                       match.status === "pending_report" ? "Reportar" : "Agendada"}
+                      {match.status === "pending_confirm"
+                        ? "Confirm"
+                        : match.status === "pending_report"
+                        ? "Report"
+                        : "Scheduled"}
                     </Badge>
                   </Link>
                 ))}
@@ -167,7 +293,13 @@ export default function Dashboard() {
             ) : (
               <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
                 <Swords className="h-10 w-10 mb-2 opacity-50" />
-                <p className="text-sm">Nenhuma partida pendente</p>
+                <p className="text-sm">No pending matches</p>
+                <p className="text-xs mt-1 text-muted-foreground">
+                  Join a tournament to get scheduled fixtures.
+                </p>
+                <Button asChild className="mt-3" size="sm" variant="outline">
+                  <Link to="/tournaments">Browse tournaments</Link>
+                </Button>
               </div>
             )}
           </CardContent>
@@ -180,17 +312,17 @@ export default function Dashboard() {
               <div>
                 <CardTitle className="flex items-center gap-2">
                   <Bell className="h-5 w-5 text-primary" />
-                  Notificações
+                  Notifications
                   {unreadNotifications.length > 0 && (
                     <Badge variant="destructive" className="ml-2">
                       {unreadNotifications.length}
                     </Badge>
                   )}
                 </CardTitle>
-                <CardDescription>Atualizações recentes</CardDescription>
+                <CardDescription>Recent updates</CardDescription>
               </div>
               <Button asChild variant="outline" size="sm">
-                <Link to="/profile">Ver todas</Link>
+                <Link to="/notifications">View all</Link>
               </Button>
             </div>
           </CardHeader>
@@ -201,7 +333,9 @@ export default function Dashboard() {
                   <div
                     key={notif.id}
                     className={`flex items-start gap-3 p-3 rounded-lg ${
-                      notif.read_at ? "bg-muted/30" : "bg-primary/5 border border-primary/20"
+                      notif.read_at
+                        ? "bg-muted/30"
+                        : "bg-primary/5 border border-primary/20"
                     }`}
                   >
                     {!notif.read_at && (
@@ -210,15 +344,12 @@ export default function Dashboard() {
                     <div className="flex-1 space-y-1">
                       <p className="text-sm font-medium">{notif.title}</p>
                       {notif.body && (
-                        <p className="text-xs text-muted-foreground line-clamp-2">{notif.body}</p>
+                        <p className="text-xs text-muted-foreground line-clamp-2">
+                          {notif.body}
+                        </p>
                       )}
                       <p className="text-xs text-muted-foreground">
-                        {new Date(notif.created_at).toLocaleString("pt-BR", {
-                          day: "2-digit",
-                          month: "short",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
+                        {formatNotifDate(notif.created_at)}
                       </p>
                     </div>
                   </div>
@@ -227,7 +358,10 @@ export default function Dashboard() {
             ) : (
               <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
                 <Bell className="h-10 w-10 mb-2 opacity-50" />
-                <p className="text-sm">Nenhuma notificação</p>
+                <p className="text-sm">No notifications</p>
+                <p className="text-xs mt-1 text-muted-foreground">
+                  We’ll notify you about matches, tournaments and disputes here.
+                </p>
               </div>
             )}
           </CardContent>
@@ -240,12 +374,12 @@ export default function Dashboard() {
               <div>
                 <CardTitle className="flex items-center gap-2">
                   <Users className="h-5 w-5 text-primary" />
-                  Meus Times
+                  My Teams
                 </CardTitle>
-                <CardDescription>Times que você gerencia</CardDescription>
+                <CardDescription>Teams you manage</CardDescription>
               </div>
               <Button asChild variant="outline" size="sm">
-                <Link to="/teams">Ver todos</Link>
+                <Link to="/teams">View all</Link>
               </Button>
             </div>
           </CardHeader>
@@ -264,15 +398,20 @@ export default function Dashboard() {
                   >
                     <Avatar className="h-10 w-10 rounded-lg">
                       <AvatarFallback className="rounded-lg bg-primary/10 text-primary font-bold">
-                        {team.tag?.slice(0, 2)}
+                        {team.tag?.slice(0, 2) || "TM"}
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex-1">
                       <p className="font-medium">{team.name}</p>
-                      <p className="text-xs text-muted-foreground">[{team.tag}]</p>
+                      <p className="text-xs text-muted-foreground">
+                        [{team.tag || "TAG"}]
+                      </p>
                     </div>
                     <Badge variant="outline">
-                      {(team as any).team_memberships?.[0]?.count || 0} membros
+                      {(team as any).membersCount ??
+                        (team as any).team_memberships?.length ??
+                        0}{" "}
+                      members
                     </Badge>
                   </Link>
                 ))}
@@ -280,9 +419,12 @@ export default function Dashboard() {
             ) : (
               <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
                 <Users className="h-10 w-10 mb-2 opacity-50" />
-                <p className="text-sm">Você não possui times</p>
-                <Button asChild className="mt-2" size="sm">
-                  <Link to="/teams">Criar Time</Link>
+                <p className="text-sm">You don’t have a team yet</p>
+                <p className="text-xs mt-1 text-muted-foreground">
+                  Create a team to start joining competitions.
+                </p>
+                <Button asChild className="mt-3" size="sm">
+                  <Link to="/teams">Create Team</Link>
                 </Button>
               </div>
             )}
@@ -296,12 +438,12 @@ export default function Dashboard() {
               <div>
                 <CardTitle className="flex items-center gap-2">
                   <Trophy className="h-5 w-5 text-primary" />
-                  Meus Torneios
+                  My Tournaments
                 </CardTitle>
-                <CardDescription>Torneios que você criou</CardDescription>
+                <CardDescription>Tournaments you created</CardDescription>
               </div>
               <Button asChild variant="outline" size="sm">
-                <Link to="/tournaments">Ver todos</Link>
+                <Link to="/tournaments">View all</Link>
               </Button>
             </div>
           </CardHeader>
@@ -321,13 +463,23 @@ export default function Dashboard() {
                     <div>
                       <p className="font-medium">{tournament.name}</p>
                       <p className="text-xs text-muted-foreground">
-                        {(tournament as any).game_modes?.name || "Jogo"}
+                        {(tournament as any).game_modes?.name || "Game"}
                       </p>
                     </div>
-                    <Badge variant={tournament.status === "in_progress" ? "default" : "secondary"}>
-                      {tournament.status === "draft" ? "Rascunho" :
-                       tournament.status === "in_progress" ? "Ativo" :
-                       tournament.status === "registrations_open" ? "Inscrições" : tournament.status}
+                    <Badge
+                      variant={
+                        tournament.status === "in_progress"
+                          ? "default"
+                          : "secondary"
+                      }
+                    >
+                      {tournament.status === "draft"
+                        ? "Draft"
+                        : tournament.status === "in_progress"
+                        ? "Live"
+                        : tournament.status === "registrations_open"
+                        ? "Registrations"
+                        : tournament.status}
                     </Badge>
                   </Link>
                 ))}
@@ -335,9 +487,14 @@ export default function Dashboard() {
             ) : (
               <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
                 <Trophy className="h-10 w-10 mb-2 opacity-50" />
-                <p className="text-sm">Você não criou torneios</p>
-                <Button asChild className="mt-2" size="sm">
-                  <Link to="/tournaments/create">Criar Torneio</Link>
+                <p className="text-sm">No tournaments created</p>
+                <p className="text-xs mt-1 text-muted-foreground">
+                  If you want to host, go to the organizer/admin area.
+                </p>
+                <Button asChild className="mt-3" size="sm" variant="outline">
+                  <Link to={canCreateTournament ? "/admin" : "/tournaments"}>
+                    {canCreateTournament ? "Go to Admin" : "Browse tournaments"}
+                  </Link>
                 </Button>
               </div>
             )}
@@ -347,3 +504,5 @@ export default function Dashboard() {
     </div>
   );
 }
+
+

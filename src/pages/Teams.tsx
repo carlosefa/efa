@@ -1,6 +1,15 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Users, Plus, Search, Filter, Trophy, Medal, MapPin, Loader2 } from "lucide-react";
+import {
+  Users,
+  Plus,
+  Search,
+  Filter,
+  Trophy,
+  Medal,
+  MapPin,
+  Loader2,
+} from "lucide-react";
 import { useTeams } from "@/hooks/useTeams";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -28,13 +37,13 @@ export default function Teams() {
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
             <Users className="h-6 w-6 text-primary" />
-            Times
+            Teams
           </h1>
-          <p className="text-muted-foreground">Gerencie seus times e jogadores</p>
+          <p className="text-muted-foreground">Manage your teams and players</p>
         </div>
         <Button onClick={() => setCreateDialogOpen(true)}>
           <Plus className="h-4 w-4 mr-2" />
-          Criar Time
+          Create Team
         </Button>
       </div>
 
@@ -43,7 +52,7 @@ export default function Teams() {
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Buscar times..."
+            placeholder="Search teams..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-9"
@@ -65,7 +74,10 @@ export default function Teams() {
       ) : filteredTeams && filteredTeams.length > 0 ? (
         <div className="grid gap-4 md:grid-cols-2">
           {filteredTeams.map((team) => (
-            <Card key={team.id} className="group hover:border-primary/50 transition-colors">
+            <Card
+              key={team.id}
+              className="group hover:border-primary/50 transition-colors"
+            >
               <CardHeader className="pb-3">
                 <div className="flex items-start gap-4">
                   <Avatar className="h-16 w-16 rounded-lg">
@@ -101,7 +113,7 @@ export default function Teams() {
                     </div>
                     <div className="flex items-center gap-1.5 text-muted-foreground">
                       <Trophy className="h-4 w-4 text-secondary" />
-                      <span>0 títulos</span>
+                      <span>0 titles</span>
                     </div>
                     <div className="flex items-center gap-1.5 text-muted-foreground">
                       <Users className="h-4 w-4" />
@@ -118,19 +130,24 @@ export default function Teams() {
           <CardContent className="flex flex-col items-center justify-center py-12">
             <Users className="h-12 w-12 text-muted-foreground/50 mb-4" />
             <p className="text-muted-foreground text-center">
-              {searchQuery ? "Nenhum time encontrado" : "Nenhum time cadastrado ainda"}
+              {searchQuery
+                ? "No teams found"
+                : "No teams registered yet"}
             </p>
             {!searchQuery && (
               <Button className="mt-4" onClick={() => setCreateDialogOpen(true)}>
                 <Plus className="h-4 w-4 mr-2" />
-                Criar primeiro time
+                Create your first team
               </Button>
             )}
           </CardContent>
         </Card>
       )}
 
-      <CreateTeamDialog open={createDialogOpen} onOpenChange={setCreateDialogOpen} />
+      <CreateTeamDialog
+        open={createDialogOpen}
+        onOpenChange={setCreateDialogOpen}
+      />
     </div>
   );
 }

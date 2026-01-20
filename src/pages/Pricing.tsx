@@ -1,5 +1,14 @@
 import { Link } from "react-router-dom";
-import { Check, Zap, Star, Crown, Diamond, Sparkles, ArrowRight, HelpCircle } from "lucide-react";
+import {
+  Check,
+  Zap,
+  Star,
+  Crown,
+  Diamond,
+  Sparkles,
+  ArrowRight,
+  HelpCircle,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -8,18 +17,18 @@ const plans = [
   {
     name: "Free",
     icon: Sparkles,
-    price: "R$ 0",
-    period: "/mês",
-    description: "Para começar a competir",
+    price: "USD 0",
+    period: "/month",
+    description: "To get started competing",
     features: [
-      "Até 2 torneios ativos",
-      "Formatos básicos (liga, mata-mata)",
-      "Rankings públicos",
-      "Páginas de time e jogador",
-      "Match room básico",
-      "Suporte via comunidade",
+      "Up to 2 active tournaments",
+      "Basic formats (league, knockout)",
+      "Public rankings",
+      "Team and player pages",
+      "Basic match room",
+      "Community support",
     ],
-    cta: "Começar Grátis",
+    cta: "Get Started Free",
     variant: "outline" as const,
     gradient: "from-muted/50 to-muted/30",
     iconColor: "text-muted-foreground",
@@ -27,18 +36,18 @@ const plans = [
   {
     name: "Silver",
     icon: Star,
-    price: "R$ 49",
-    period: "/mês",
-    description: "Para organizadores sérios",
+    price: "USD 10",
+    period: "/month",
+    description: "For serious organizers",
     features: [
-      "Até 10 torneios ativos",
-      "Formatos avançados (grupos + playoffs)",
-      "Staff e permissões básicas",
-      "Notificações por email",
-      "Estatísticas detalhadas",
-      "Suporte em 48h",
+      "Up to 10 active tournaments",
+      "Advanced formats (groups + playoffs)",
+      "Staff and basic permissions",
+      "Email notifications",
+      "Detailed statistics",
+      "48h support",
     ],
-    cta: "Assinar Silver",
+    cta: "Subscribe to Silver",
     variant: "outline" as const,
     gradient: "from-rank-silver/20 to-rank-silver/5",
     iconColor: "text-rank-silver",
@@ -47,19 +56,19 @@ const plans = [
   {
     name: "Gold",
     icon: Crown,
-    price: "R$ 149",
-    period: "/mês",
-    description: "Para ligas profissionais",
+    price: "USD 30",
+    period: "/month",
+    description: "For professional leagues",
     popular: true,
     features: [
-      "Torneios ilimitados",
-      "Todos os formatos (suíço, double elim)",
-      "Automações e planner de calendário",
-      "Relatórios e analytics",
-      "Integrações (Discord, WhatsApp)",
-      "Suporte em 24h",
+      "Unlimited tournaments",
+      "All formats (Swiss, double elimination)",
+      "Automations and calendar planner",
+      "Reports and analytics",
+      "Integrations (Discord, WhatsApp)",
+      "24h support",
     ],
-    cta: "Assinar Gold",
+    cta: "Subscribe to Gold",
     variant: "default" as const,
     gradient: "from-rank-gold/20 to-rank-gold/5",
     iconColor: "text-rank-gold",
@@ -69,18 +78,18 @@ const plans = [
   {
     name: "Diamond",
     icon: Diamond,
-    price: "R$ 399",
-    period: "/mês",
-    description: "Para federações e empresas",
+    price: "USD 100",
+    period: "/month",
+    description: "For federations and companies",
     features: [
-      "Tudo do Gold +",
-      "SLA premium (6-12h)",
-      "Verificação de organização",
-      "API e webhooks",
-      "Multi-país e white-label",
-      "Gerente de conta dedicado",
+      "Everything in Gold +",
+      "Premium SLA (6–12h)",
+      "Organization verification",
+      "API and webhooks",
+      "Multi-country and white-label",
+      "Dedicated account manager",
     ],
-    cta: "Falar com Vendas",
+    cta: "Talk to Sales",
     variant: "outline" as const,
     gradient: "from-rank-diamond/20 to-rank-diamond/5",
     iconColor: "text-rank-diamond",
@@ -90,16 +99,19 @@ const plans = [
 
 const faqs = [
   {
-    question: "Posso mudar de plano depois?",
-    answer: "Sim! Você pode fazer upgrade ou downgrade a qualquer momento. A cobrança é proporcional.",
+    question: "Can I change plans later?",
+    answer:
+      "Yes! You can upgrade or downgrade at any time. Billing is prorated.",
   },
   {
-    question: "Preciso de cartão de crédito para o plano Free?",
-    answer: "Não! O plano Free é 100% gratuito e não requer cartão de crédito.",
+    question: "Do I need a credit card for the Free plan?",
+    answer:
+      "No! The Free plan is 100% free and does not require a credit card.",
   },
   {
-    question: "Qual a política de cancelamento?",
-    answer: "Cancele quando quiser, sem multas. Você mantém acesso até o fim do período pago.",
+    question: "What is the cancellation policy?",
+    answer:
+      "Cancel anytime, no penalties. You keep access until the end of the paid period.",
   },
 ];
 
@@ -117,18 +129,21 @@ export default function Pricing() {
         <div className="text-center mb-16 space-y-4 animate-slide-up">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary/30 bg-primary/10">
             <Zap className="h-4 w-4 text-primary" />
-            <span className="text-sm font-semibold text-primary tracking-wider uppercase">Planos</span>
+            <span className="text-sm font-semibold text-primary tracking-wider uppercase">
+              Plans
+            </span>
           </div>
-          
+
           <h1 className="text-4xl md:text-5xl font-bold">
-            Escolha o plano ideal para{" "}
-            <span className="text-gradient-cyber">você</span>
+            Choose the ideal plan for{" "}
+            <span className="text-gradient-cyber">you</span>
           </h1>
-          
+
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Do casual ao profissional, temos o plano perfeito para sua jornada no esports.
+            From casual to professional, we have the perfect plan for your
+            esports journey.
             <span className="block text-sm mt-2 text-muted-foreground/70">
-              Todos os planos incluem atualizações gratuitas e sem taxas ocultas.
+              All plans include free updates and no hidden fees.
             </span>
           </p>
         </div>
@@ -150,30 +165,36 @@ export default function Pricing() {
                 {/* Popular badge */}
                 {plan.popular && (
                   <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-rank-gold to-warning text-background text-xs font-semibold tracking-wider px-4">
-                    MAIS POPULAR
+                    MOST POPULAR
                   </Badge>
                 )}
 
                 {/* Plan header */}
                 <div className="text-center mb-6 pt-2">
-                  {/* Icon */}
-                  <div className={cn(
-                    "inline-flex items-center justify-center h-14 w-14 rounded-xl bg-gradient-to-br mb-4",
-                    plan.gradient
-                  )}>
+                  <div
+                    className={cn(
+                      "inline-flex items-center justify-center h-14 w-14 rounded-xl bg-gradient-to-br mb-4",
+                      plan.gradient
+                    )}
+                  >
                     <Icon className={cn("h-7 w-7", plan.iconColor)} />
                   </div>
 
-                  {/* Name & description */}
                   <h3 className="text-xl font-bold mb-1">{plan.name}</h3>
-                  <p className="text-sm text-muted-foreground">{plan.description}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {plan.description}
+                  </p>
                 </div>
 
                 {/* Price */}
                 <div className="text-center mb-6 pb-6 border-b border-border/50">
                   <div className="flex items-baseline justify-center gap-1">
-                    <span className="text-4xl font-bold text-foreground">{plan.price}</span>
-                    <span className="text-muted-foreground">{plan.period}</span>
+                    <span className="text-4xl font-bold text-foreground">
+                      {plan.price}
+                    </span>
+                    <span className="text-muted-foreground">
+                      {plan.period}
+                    </span>
                   </div>
                 </div>
 
@@ -181,35 +202,47 @@ export default function Pricing() {
                 <ul className="space-y-3 flex-1 mb-6">
                   {plan.features.map((feature, j) => (
                     <li key={j} className="flex items-start gap-3 text-sm">
-                      <div className={cn(
-                        "h-5 w-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5",
-                        plan.popular ? "bg-rank-gold/20" : "bg-primary/10"
-                      )}>
-                        <Check className={cn(
-                          "h-3 w-3",
-                          plan.popular ? "text-rank-gold" : "text-primary"
-                        )} />
+                      <div
+                        className={cn(
+                          "h-5 w-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5",
+                          plan.popular
+                            ? "bg-rank-gold/20"
+                            : "bg-primary/10"
+                        )}
+                      >
+                        <Check
+                          className={cn(
+                            "h-3 w-3",
+                            plan.popular
+                              ? "text-rank-gold"
+                              : "text-primary"
+                          )}
+                        />
                       </div>
-                      <span className="text-muted-foreground">{feature}</span>
+                      <span className="text-muted-foreground">
+                        {feature}
+                      </span>
                     </li>
                   ))}
                 </ul>
 
                 {/* CTA */}
-                <Button 
+                <Button
                   className={cn(
                     "w-full cyber-btn group",
-                    plan.popular 
-                      ? "bg-gradient-to-r from-rank-gold to-warning text-background hover:opacity-90" 
-                      : plan.variant === "default" 
-                        ? "bg-primary text-primary-foreground" 
-                        : "border-border/50 hover:border-primary/50 hover:bg-primary/5"
+                    plan.popular
+                      ? "bg-gradient-to-r from-rank-gold to-warning text-background hover:opacity-90"
+                      : plan.variant === "default"
+                      ? "bg-primary text-primary-foreground"
+                      : "border-border/50 hover:border-primary/50 hover:bg-primary/5"
                   )}
                   variant={plan.popular ? "default" : plan.variant}
                   asChild
                 >
                   <Link to="/auth">
-                    <span className="text-xs font-semibold tracking-wider">{plan.cta}</span>
+                    <span className="text-xs font-semibold tracking-wider">
+                      {plan.cta}
+                    </span>
                     <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </Link>
                 </Button>
@@ -219,22 +252,25 @@ export default function Pricing() {
         </div>
 
         {/* Trust badges */}
-        <div className="flex flex-wrap justify-center gap-6 text-sm text-muted-foreground mb-20 animate-slide-up" style={{ animationDelay: "400ms" }}>
+        <div
+          className="flex flex-wrap justify-center gap-6 text-sm text-muted-foreground mb-20 animate-slide-up"
+          style={{ animationDelay: "400ms" }}
+        >
           <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface-1/50">
             <Check className="h-4 w-4 text-success" />
-            <span>Cancele quando quiser</span>
+            <span>Cancel anytime</span>
           </div>
           <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface-1/50">
             <Check className="h-4 w-4 text-success" />
-            <span>Sem taxas ocultas</span>
+            <span>No hidden fees</span>
           </div>
           <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface-1/50">
             <Check className="h-4 w-4 text-success" />
-            <span>Suporte em português</span>
+            <span>English support</span>
           </div>
           <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface-1/50">
             <Check className="h-4 w-4 text-success" />
-            <span>Dados seguros (LGPD)</span>
+            <span>Secure data (LGPD)</span>
           </div>
         </div>
 
@@ -243,20 +279,26 @@ export default function Pricing() {
           <div className="text-center mb-8">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-accent/30 bg-accent/5 mb-4">
               <HelpCircle className="h-4 w-4 text-accent" />
-              <span className="text-sm font-semibold text-accent tracking-wider uppercase">FAQ</span>
+              <span className="text-sm font-semibold text-accent tracking-wider uppercase">
+                FAQ
+              </span>
             </div>
-            <h2 className="text-2xl font-bold">Perguntas Frequentes</h2>
+            <h2 className="text-2xl font-bold">Frequently Asked Questions</h2>
           </div>
 
           <div className="space-y-4">
             {faqs.map((faq, i) => (
-              <div 
-                key={i} 
+              <div
+                key={i}
                 className="glass-card p-5 animate-slide-up"
                 style={{ animationDelay: `${(i + 5) * 100}ms` }}
               >
-                <h3 className="font-semibold text-foreground mb-2">{faq.question}</h3>
-                <p className="text-sm text-muted-foreground">{faq.answer}</p>
+                <h3 className="font-semibold text-foreground mb-2">
+                  {faq.question}
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  {faq.answer}
+                </p>
               </div>
             ))}
           </div>
@@ -264,9 +306,12 @@ export default function Pricing() {
           {/* Support link */}
           <div className="mt-8 text-center">
             <p className="text-muted-foreground">
-              Ainda tem dúvidas?{" "}
-              <Link to="/support" className="text-primary hover:underline font-medium">
-                Fale com nosso time
+              Still have questions?{" "}
+              <Link
+                to="/support"
+                className="text-primary hover:underline font-medium"
+              >
+                Talk to our team
               </Link>
             </p>
           </div>

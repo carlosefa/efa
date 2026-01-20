@@ -9,14 +9,17 @@ interface CoinPackagesGridProps {
   disabled?: boolean;
 }
 
-export function CoinPackagesGrid({ onPurchase, disabled = false }: CoinPackagesGridProps) {
+export function CoinPackagesGrid({
+  onPurchase,
+  disabled = false,
+}: CoinPackagesGridProps) {
   const { data: packages = [], isLoading } = useCoinPackages();
 
   const formatPrice = (priceCents: number | null) => {
     if (!priceCents) return "N/A";
-    return new Intl.NumberFormat("pt-BR", {
+    return new Intl.NumberFormat("en-US", {
       style: "currency",
-      currency: "BRL",
+      currency: "USD",
     }).format(priceCents / 100);
   };
 
@@ -39,7 +42,7 @@ export function CoinPackagesGrid({ onPurchase, disabled = false }: CoinPackagesG
       {packages.map((pkg, index) => {
         const isPopular = index === 1;
         const isBest = index === packages.length - 1;
-        
+
         return (
           <Card
             key={pkg.id}
@@ -58,14 +61,14 @@ export function CoinPackagesGrid({ onPurchase, disabled = false }: CoinPackagesG
             )}
             {isBest && (
               <div className="absolute top-0 right-0 bg-yellow-500 text-yellow-950 text-xs px-3 py-1 rounded-bl-lg font-medium flex items-center gap-1">
-                <Sparkles className="h-3 w-3" /> Melhor Valor
+                <Sparkles className="h-3 w-3" /> Best Value
               </div>
             )}
-            
+
             <CardHeader className="pb-2">
               <CardTitle className="text-lg">{pkg.name}</CardTitle>
             </CardHeader>
-            
+
             <CardContent className="space-y-4">
               <div className="text-center py-4">
                 <div className="flex items-center justify-center gap-2">
@@ -74,17 +77,17 @@ export function CoinPackagesGrid({ onPurchase, disabled = false }: CoinPackagesG
                 </div>
                 {pkg.bonus_coins > 0 && (
                   <Badge variant="secondary" className="mt-2">
-                    +{pkg.bonus_coins} bônus
+                    +{pkg.bonus_coins} bonus
                   </Badge>
                 )}
               </div>
-              
+
               {pkg.description && (
                 <p className="text-sm text-muted-foreground text-center">
                   {pkg.description}
                 </p>
               )}
-              
+
               <Button
                 className="w-full"
                 variant={isPopular ? "default" : "outline"}
@@ -94,12 +97,12 @@ export function CoinPackagesGrid({ onPurchase, disabled = false }: CoinPackagesG
                 {disabled ? (
                   <>
                     <Lock className="h-4 w-4 mr-2" />
-                    Em breve
+                    Coming soon
                   </>
                 ) : pkg.price_cents ? (
                   formatPrice(pkg.price_cents)
                 ) : (
-                  "Indisponível"
+                  "Unavailable"
                 )}
               </Button>
             </CardContent>

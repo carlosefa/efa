@@ -7,33 +7,48 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { AppShell } from "@/components/layout/AppShell";
 import { PublicLayout } from "@/components/layout/PublicLayout";
-import Landing from "./pages/Landing";
-import Pricing from "./pages/Pricing";
-import Auth from "./pages/Auth";
-import Dashboard from "./pages/Dashboard";
-import Tournaments from "./pages/Tournaments";
-import CreateTournament from "./pages/CreateTournament";
-import TournamentDetail from "./pages/TournamentDetail";
-import Teams from "./pages/Teams";
-import TeamDetail from "./pages/TeamDetail";
-import Matches from "./pages/Matches";
-import MatchRoom from "./pages/MatchRoom";
-import Rankings from "./pages/Rankings";
-import Profile from "./pages/Profile";
-import Friendlies from "./pages/Friendlies";
-import Chat from "./pages/Chat";
-import Wallet from "./pages/Wallet";
-import AdminCountry from "./pages/AdminCountry";
-import AdminGlobal from "./pages/AdminGlobal";
-import Install from "./pages/Install";
-import Achievements from "./pages/Achievements";
-import ForcePasswordChange from "./pages/ForcePasswordChange";
-import NotFound from "./pages/NotFound";
 
-// Public pages
-import PublicRankings from "./pages/PublicRankings";
-import PublicTournaments from "./pages/PublicTournaments";
-import PublicTeams from "./pages/PublicTeams";
+/* Public / base pages */
+import Landing from "./pages/landing";
+import Pricing from "./pages/pricing";
+import Auth from "./pages/auth";
+import Install from "./pages/install";
+import NotFound from "./pages/notfound";
+import ForcePasswordChange from "./pages/forcepasswordchange";
+
+/* App core */
+import Dashboard from "./pages/dashboard";
+
+/* Tournaments */
+import Tournaments from "./pages/tournaments";
+import CreateTournament from "./pages/tournaments/new";
+import TournamentDetail from "./pages/tournaments/[id]";
+import TournamentSettings from "./pages/tournaments/[id]/settings";
+
+/* Teams */
+import Teams from "./pages/teams";
+import TeamDetail from "./pages/teams/[id]";
+
+/* Matches */
+import Matches from "./pages/matches";
+import MatchRoom from "./pages/matches/[id]";
+
+/* Other features */
+import Rankings from "./pages/rankings";
+import Profile from "./pages/profile";
+import Friendlies from "./pages/friendlies";
+import Chat from "./pages/chat";
+import Wallet from "./pages/wallet";
+import Achievements from "./pages/achievements";
+
+/* Admin */
+import AdminCountry from "./pages/admin";
+import AdminGlobal from "./pages/adminglobal";
+
+/* Public pages */
+import PublicRankings from "./pages/publicrankings";
+import PublicTournaments from "./pages/publictournaments";
+import PublicTeams from "./pages/publicteams";
 
 const queryClient = new QueryClient();
 
@@ -43,6 +58,7 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
+
         <BrowserRouter>
           <Routes>
             {/* Public routes */}
@@ -54,12 +70,12 @@ const App = () => (
               <Route path="/teams" element={<PublicTeams />} />
             </Route>
 
-            {/* Auth routes */}
+            {/* Auth / system */}
             <Route path="/auth" element={<Auth />} />
             <Route path="/install" element={<Install />} />
             <Route path="/change-password" element={<ForcePasswordChange />} />
 
-            {/* Protected app routes */}
+            {/* Protected app */}
             <Route
               element={
                 <ProtectedRoute>
@@ -68,24 +84,36 @@ const App = () => (
               }
             >
               <Route path="/dashboard" element={<Dashboard />} />
+
+              {/* App tournaments */}
               <Route path="/app/tournaments" element={<Tournaments />} />
-              <Route path="/app/tournaments/create" element={<CreateTournament />} />
+              <Route path="/app/tournaments/new" element={<CreateTournament />} />
               <Route path="/app/tournaments/:id" element={<TournamentDetail />} />
+              <Route path="/app/tournaments/:id/settings" element={<TournamentSettings />} />
+          
+              {/* App teams */}
               <Route path="/app/teams" element={<Teams />} />
               <Route path="/app/teams/:id" element={<TeamDetail />} />
+
+              {/* Matches */}
               <Route path="/matches" element={<Matches />} />
               <Route path="/matches/:id" element={<MatchRoom />} />
+
+              {/* Other app areas */}
               <Route path="/app/rankings" element={<Rankings />} />
               <Route path="/friendlies" element={<Friendlies />} />
               <Route path="/achievements" element={<Achievements />} />
               <Route path="/chat" element={<Chat />} />
               <Route path="/chat/:threadId" element={<Chat />} />
               <Route path="/wallet" element={<Wallet />} />
+              <Route path="/profile" element={<Profile />} />
+
+              {/* Admin */}
               <Route path="/admin/country" element={<AdminCountry />} />
               <Route path="/admin/global" element={<AdminGlobal />} />
-              <Route path="/profile" element={<Profile />} />
             </Route>
 
+            {/* Fallback */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

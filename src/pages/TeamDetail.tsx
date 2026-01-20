@@ -22,10 +22,10 @@ import { InvitePlayerDialog } from "@/components/teams/InvitePlayerDialog";
 import { EditTeamDialog } from "@/components/teams/EditTeamDialog";
 
 const roleLabels: Record<string, string> = {
-  owner: "Dono",
-  coach: "Técnico",
-  player: "Jogador",
-  substitute: "Reserva",
+  owner: "Owner",
+  coach: "Coach",
+  player: "Player",
+  substitute: "Substitute",
 };
 
 const roleColors: Record<string, string> = {
@@ -56,9 +56,9 @@ export default function TeamDetail() {
   if (!team) {
     return (
       <div className="text-center py-20">
-        <h2 className="text-xl font-semibold">Time não encontrado</h2>
+        <h2 className="text-xl font-semibold">Team not found</h2>
         <Button asChild className="mt-4">
-          <Link to="/teams">Voltar para Times</Link>
+          <Link to="/teams">Back to Teams</Link>
         </Button>
       </div>
     );
@@ -84,6 +84,7 @@ export default function TeamDetail() {
                   [{team.tag}]
                 </Badge>
               </h1>
+
               <div className="flex flex-wrap items-center gap-4 mt-2 text-sm text-muted-foreground">
                 {team.countries && (
                   <span className="flex items-center gap-1">
@@ -91,26 +92,37 @@ export default function TeamDetail() {
                     {team.countries.name}
                   </span>
                 )}
+
                 <span className="flex items-center gap-1">
                   <Users className="h-4 w-4" />
-                  {members?.length || 0} membros
+                  {members?.length || 0} members
                 </span>
+
                 <span className="flex items-center gap-1">
                   <Calendar className="h-4 w-4" />
-                  Criado em {new Date(team.created_at).toLocaleDateString("pt-BR")}
+                  Created on {new Date(team.created_at).toLocaleDateString("en-US")}
                 </span>
               </div>
             </div>
 
             {isOwner && (
               <div className="flex gap-2">
-                <Button variant="outline" size="sm" onClick={() => setShowInviteDialog(true)}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowInviteDialog(true)}
+                >
                   <UserPlus className="h-4 w-4 mr-2" />
-                  Convidar
+                  Invite
                 </Button>
-                <Button variant="outline" size="sm" onClick={() => setShowEditDialog(true)}>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowEditDialog(true)}
+                >
                   <Settings className="h-4 w-4 mr-2" />
-                  Editar
+                  Edit
                 </Button>
               </div>
             )}
@@ -122,9 +134,10 @@ export default function TeamDetail() {
               <CardContent className="p-4 text-center">
                 <Trophy className="h-5 w-5 mx-auto text-secondary mb-1" />
                 <p className="text-2xl font-bold">0</p>
-                <p className="text-xs text-muted-foreground">Títulos</p>
+                <p className="text-xs text-muted-foreground">Titles</p>
               </CardContent>
             </Card>
+
             <Card>
               <CardContent className="p-4 text-center">
                 <Medal className="h-5 w-5 mx-auto text-primary mb-1" />
@@ -132,18 +145,20 @@ export default function TeamDetail() {
                 <p className="text-xs text-muted-foreground">Ranking</p>
               </CardContent>
             </Card>
+
             <Card>
               <CardContent className="p-4 text-center">
                 <Shield className="h-5 w-5 mx-auto text-muted-foreground mb-1" />
                 <p className="text-2xl font-bold">0</p>
-                <p className="text-xs text-muted-foreground">Torneios</p>
+                <p className="text-xs text-muted-foreground">Tournaments</p>
               </CardContent>
             </Card>
+
             <Card>
               <CardContent className="p-4 text-center">
                 <Users className="h-5 w-5 mx-auto text-muted-foreground mb-1" />
                 <p className="text-2xl font-bold">0</p>
-                <p className="text-xs text-muted-foreground">Partidas</p>
+                <p className="text-xs text-muted-foreground">Matches</p>
               </CardContent>
             </Card>
           </div>
@@ -153,17 +168,18 @@ export default function TeamDetail() {
       {/* Tabs */}
       <Tabs defaultValue="members">
         <TabsList>
-          <TabsTrigger value="members">Elenco</TabsTrigger>
-          <TabsTrigger value="matches">Partidas</TabsTrigger>
-          <TabsTrigger value="tournaments">Torneios</TabsTrigger>
-          <TabsTrigger value="stats">Estatísticas</TabsTrigger>
+          <TabsTrigger value="members">Roster</TabsTrigger>
+          <TabsTrigger value="matches">Matches</TabsTrigger>
+          <TabsTrigger value="tournaments">Tournaments</TabsTrigger>
+          <TabsTrigger value="stats">Stats</TabsTrigger>
         </TabsList>
 
         <TabsContent value="members" className="mt-6">
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Elenco</CardTitle>
+              <CardTitle className="text-lg">Roster</CardTitle>
             </CardHeader>
+
             <CardContent>
               {membersLoading ? (
                 <div className="flex justify-center py-8">
@@ -183,15 +199,18 @@ export default function TeamDetail() {
                             {member.profile?.display_name?.charAt(0) || "?"}
                           </AvatarFallback>
                         </Avatar>
+
                         <div>
                           <p className="font-medium">
-                            {member.profile?.display_name || member.profile?.username}
+                            {member.profile?.display_name ||
+                              member.profile?.username}
                           </p>
                           <p className="text-xs text-muted-foreground">
                             @{member.profile?.username}
                           </p>
                         </div>
                       </div>
+
                       <div className="flex items-center gap-3">
                         {member.jersey_number && (
                           <span className="text-sm font-mono text-muted-foreground">
@@ -207,7 +226,7 @@ export default function TeamDetail() {
                 </div>
               ) : (
                 <p className="text-center text-muted-foreground py-8">
-                  Nenhum membro no elenco
+                  No members in the roster
                 </p>
               )}
             </CardContent>
@@ -218,7 +237,7 @@ export default function TeamDetail() {
           <Card>
             <CardContent className="flex flex-col items-center justify-center py-12">
               <Trophy className="h-12 w-12 text-muted-foreground/50 mb-4" />
-              <p className="text-muted-foreground">Nenhuma partida encontrada</p>
+              <p className="text-muted-foreground">No matches found</p>
             </CardContent>
           </Card>
         </TabsContent>
@@ -227,7 +246,7 @@ export default function TeamDetail() {
           <Card>
             <CardContent className="flex flex-col items-center justify-center py-12">
               <Trophy className="h-12 w-12 text-muted-foreground/50 mb-4" />
-              <p className="text-muted-foreground">Nenhum torneio encontrado</p>
+              <p className="text-muted-foreground">No tournaments found</p>
             </CardContent>
           </Card>
         </TabsContent>
@@ -236,7 +255,7 @@ export default function TeamDetail() {
           <Card>
             <CardContent className="flex flex-col items-center justify-center py-12">
               <Medal className="h-12 w-12 text-muted-foreground/50 mb-4" />
-              <p className="text-muted-foreground">Estatísticas em breve</p>
+              <p className="text-muted-foreground">Stats coming soon</p>
             </CardContent>
           </Card>
         </TabsContent>
@@ -261,3 +280,4 @@ export default function TeamDetail() {
     </div>
   );
 }
+

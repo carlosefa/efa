@@ -30,19 +30,16 @@ export function Topbar({ onMenuClick }: TopbarProps) {
     navigate("/");
   };
 
-  const userInitials = profile?.display_name?.substring(0, 2).toUpperCase() || 
-                       profile?.username?.substring(0, 2).toUpperCase() || 
-                       user?.email?.substring(0, 2).toUpperCase() || "U";
+  const userInitials =
+    profile?.display_name?.substring(0, 2).toUpperCase() ||
+    profile?.username?.substring(0, 2).toUpperCase() ||
+    user?.email?.substring(0, 2).toUpperCase() ||
+    "U";
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 lg:px-6">
       {/* Mobile menu button */}
-      <Button
-        variant="ghost"
-        size="icon"
-        className="lg:hidden"
-        onClick={onMenuClick}
-      >
+      <Button variant="ghost" size="icon" className="lg:hidden" onClick={onMenuClick}>
         <Menu className="h-5 w-5" />
       </Button>
 
@@ -51,7 +48,7 @@ export function Topbar({ onMenuClick }: TopbarProps) {
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Buscar torneios, times, jogadores..."
+            placeholder="Search tournaments, teams, players..."
             className="pl-9 bg-muted/50 border-0 focus-visible:ring-1"
           />
         </div>
@@ -67,39 +64,49 @@ export function Topbar({ onMenuClick }: TopbarProps) {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="relative h-9 w-9 rounded-full">
               <Avatar className="h-9 w-9">
-                <AvatarImage src={profile?.avatar_url || ""} alt={profile?.display_name || "User"} />
+                <AvatarImage
+                  src={profile?.avatar_url || ""}
+                  alt={profile?.display_name || "User"}
+                />
                 <AvatarFallback className="bg-primary text-primary-foreground text-xs">
                   {userInitials}
                 </AvatarFallback>
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
+
           <DropdownMenuContent align="end" className="w-56">
             <DropdownMenuLabel>
               <div className="flex flex-col">
-                <span>{profile?.display_name || profile?.username || "Minha Conta"}</span>
+                <span>{profile?.display_name || profile?.username || "My Account"}</span>
                 <span className="text-xs font-normal text-muted-foreground truncate">
                   {user?.email}
                 </span>
               </div>
             </DropdownMenuLabel>
+
             <DropdownMenuSeparator />
+
             <DropdownMenuItem onClick={() => navigate("/profile")}>
               <User className="mr-2 h-4 w-4" />
-              Perfil
+              Profile
             </DropdownMenuItem>
+
             <DropdownMenuItem onClick={() => navigate("/teams")}>
               <Users className="mr-2 h-4 w-4" />
-              Meus Times
+              My Teams
             </DropdownMenuItem>
+
             <DropdownMenuItem onClick={() => navigate("/settings")}>
               <Settings className="mr-2 h-4 w-4" />
-              Configurações
+              Settings
             </DropdownMenuItem>
+
             <DropdownMenuSeparator />
+
             <DropdownMenuItem onClick={handleSignOut} className="text-destructive">
               <LogOut className="mr-2 h-4 w-4" />
-              Sair
+              Sign out
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

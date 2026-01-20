@@ -7,25 +7,29 @@ type TournamentStatus = Database["public"]["Enums"]["tournament_status"];
 type TournamentFormat = Database["public"]["Enums"]["tournament_format"];
 
 // ============ TOURNAMENTS ============
+
 export function useTournaments(filters?: {
   status?: TournamentStatus | TournamentStatus[];
-  gameId?: string;
-  countryId?: string;
-  createdBy?: string;
+  gameId?: string; // games.id
+  createdBy?: string; // profiles.id (same as auth.users.id)
 }) {
   return useQuery({
     queryKey: ["tournaments", filters],
     queryFn: async () => {
       let query = supabase
         .from("tournaments")
-        .select(`
+        .select(
+          `
           *,
-          game_modes(name, slug, team_size, games(name, slug, icon_url)),
-          countries(name, code),
-          organizations(name, slug, logo_url),
-          creator:profiles!tournaments_created_by_fkey(username, display_name),
+          game_modes(
+            id, name, slug, team_size,
+            games(id, name, slug)
+          ),
+          rulesets(id, name),
+          creator:profiles!tournaments_created_by_fkey(id, username, online_id),
           tournament_registrations(count)
-        `)
+        `
+        )
         .order("created_at", { ascending: false });
 
       if (filters?.status) {
@@ -36,12 +40,9 @@ export function useTournaments(filters?: {
         }
       }
 
+      // Filter by gameId (games.id) through game_modes relationship
       if (filters?.gameId) {
         query = query.eq("game_modes.game_id", filters.gameId);
-      }
-
-      if (filters?.countryId) {
-        query = query.eq("country_id", filters.countryId);
       }
 
       if (filters?.createdBy) {
@@ -60,18 +61,23 @@ export function useTournament(tournamentId?: string) {
     queryKey: ["tournament", tournamentId],
     queryFn: async () => {
       if (!tournamentId) return null;
+
       const { data, error } = await supabase
         .from("tournaments")
-        .select(`
+        .select(
+          `
           *,
-          game_modes(id, name, slug, team_size, stat_fields, games(id, name, slug, icon_url)),
+          game_modes(
+            id, name, slug, team_size,
+            games(id, name, slug)
+          ),
           rulesets(id, name, config),
-          countries(id, name, code, timezone),
-          organizations(id, name, slug, logo_url),
-          creator:profiles!tournaments_created_by_fkey(id, username, display_name, avatar_url)
-        `)
+          creator:profiles!tournaments_created_by_fkey(id, username, online_id)
+        `
+        )
         .eq("id", tournamentId)
         .single();
+
       if (error) throw error;
       return data;
     },
@@ -84,103 +90,56 @@ export function useTournamentRegistrations(tournamentId?: string) {
     queryKey: ["tournament_registrations", tournamentId],
     queryFn: async () => {
       if (!tournamentId) return [];
+
       const { data, error } = await supabase
         .from("tournament_registrations")
-        .select(`
+        .select(
+          `
           *,
-          team:teams(id, name, tag, logo_url, countries(name, code))
-        `)
+          team:teams(id, name, tag)
+        `
+        )
         .eq("tournament_id", tournamentId)
         .order("registered_at");
+
       if (error) throw error;
       return data;
     },
     enabled: !!tournamentId,
-  });
-}
-
-export function useTournamentStages(tournamentId?: string) {
-  return useQuery({
-    queryKey: ["tournament_stages", tournamentId],
-    queryFn: async () => {
-      if (!tournamentId) return [];
-      const { data, error } = await supabase
-        .from("stages")
-        .select("*")
-        .eq("tournament_id", tournamentId)
-        .order("stage_order");
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!tournamentId,
-  });
-}
-
-export function useStageFixtures(stageId?: string) {
-  return useQuery({
-    queryKey: ["stage_fixtures", stageId],
-    queryFn: async () => {
-      if (!stageId) return [];
-      const { data, error } = await supabase
-        .from("fixtures")
-        .select(`
-          *,
-          home_team:teams!fixtures_home_team_id_fkey(id, name, tag, logo_url),
-          away_team:teams!fixtures_away_team_id_fkey(id, name, tag, logo_url),
-          matches(*)
-        `)
-        .eq("stage_id", stageId)
-        .order("round")
-        .order("match_number");
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!stageId,
-  });
-}
-
-export function useStageStandings(stageId?: string) {
-  return useQuery({
-    queryKey: ["stage_standings", stageId],
-    queryFn: async () => {
-      if (!stageId) return [];
-      const { data, error } = await supabase
-        .from("standings")
-        .select(`
-          *,
-          team:teams(id, name, tag, logo_url)
-        `)
-        .eq("stage_id", stageId)
-        .order("group_number")
-        .order("position");
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!stageId,
   });
 }
 
 export function useMyTournaments() {
   const { user } = useAuth();
+
   return useQuery({
     queryKey: ["my_tournaments", user?.id],
     queryFn: async () => {
       if (!user) return [];
+
       const { data, error } = await supabase
         .from("tournaments")
-        .select(`
+        .select(
+          `
           *,
-          game_modes(name, games(name, icon_url)),
+          game_modes(
+            id, name, slug, team_size,
+            games(id, name, slug)
+          ),
           tournament_registrations(count)
-        `)
+        `
+        )
         .eq("created_by", user.id)
         .order("created_at", { ascending: false });
+
       if (error) throw error;
       return data;
     },
     enabled: !!user,
   });
 }
+
+// ============ MUTATIONS ============
 
 export function useCreateTournament() {
   const queryClient = useQueryClient();
@@ -191,30 +150,37 @@ export function useCreateTournament() {
       name: string;
       slug: string;
       description?: string;
+
       game_mode_id: string;
       ruleset_id?: string;
+
       format: TournamentFormat;
       max_teams: number;
       min_teams?: number;
+
       prize_description?: string;
       rules_text?: string;
+
       starts_at?: string;
       ends_at?: string;
       registration_starts_at?: string;
       registration_ends_at?: string;
       timezone?: string;
-      country_id?: string;
-      organization_id?: string;
+
       is_international?: boolean;
     }) => {
       if (!user) throw new Error("Not authenticated");
 
+      // IMPORTANT: Your new DB enforces status='draft' on insert via this code.
       const { data, error } = await supabase
         .from("tournaments")
         .insert({
           ...tournament,
           created_by: user.id,
           status: "draft",
+          min_teams: tournament.min_teams ?? 4,
+          is_international: tournament.is_international ?? false,
+          timezone: tournament.timezone ?? "America/Sao_Paulo",
         })
         .select()
         .single();
@@ -242,12 +208,14 @@ export function useUpdateTournament() {
       description?: string;
       status?: TournamentStatus;
       max_teams?: number;
+      min_teams?: number;
       prize_description?: string;
       rules_text?: string;
       starts_at?: string;
       ends_at?: string;
       registration_starts_at?: string;
       registration_ends_at?: string;
+      timezone?: string;
     }) => {
       const { data, error } = await supabase
         .from("tournaments")
@@ -255,6 +223,7 @@ export function useUpdateTournament() {
         .eq("id", id)
         .select()
         .single();
+
       if (error) throw error;
       return data;
     },
@@ -295,8 +264,12 @@ export function useRegisterTeam() {
       return data;
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["tournament_registrations", variables.tournamentId] });
+      queryClient.invalidateQueries({
+        queryKey: ["tournament_registrations", variables.tournamentId],
+      });
       queryClient.invalidateQueries({ queryKey: ["tournaments"] });
+      queryClient.invalidateQueries({ queryKey: ["tournament", variables.tournamentId] });
     },
   });
 }
+

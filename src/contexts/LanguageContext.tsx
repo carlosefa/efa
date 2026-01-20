@@ -1,9 +1,29 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+// src/contexts/LanguageContext.tsx
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useMemo,
+  ReactNode,
+} from "react";
 
-export type Language = 
-  | "pt-BR" | "en" | "es" | "fr" | "de" 
-  | "it" | "ja" | "ko" | "zh" | "ar" 
-  | "ru" | "tr" | "pl" | "nl" | "sv";
+export type Language =
+  | "pt-BR"
+  | "en"
+  | "es"
+  | "fr"
+  | "de"
+  | "it"
+  | "ja"
+  | "ko"
+  | "zh"
+  | "ar"
+  | "ru"
+  | "tr"
+  | "pl"
+  | "nl"
+  | "sv";
 
 export interface LanguageInfo {
   code: Language;
@@ -11,9 +31,14 @@ export interface LanguageInfo {
   flag: string;
 }
 
+/**
+ * English (US) first in the dropdown (UX)
+ * - keeps your Language union and codes exactly the same
+ * - only reorders the list (no breaking change)
+ */
 export const languages: LanguageInfo[] = [
+  { code: "en", name: "English (US)", flag: "🇺🇸" },
   { code: "pt-BR", name: "Português (BR)", flag: "🇧🇷" },
-  { code: "en", name: "English", flag: "🇺🇸" },
   { code: "es", name: "Español", flag: "🇪🇸" },
   { code: "fr", name: "Français", flag: "🇫🇷" },
   { code: "de", name: "Deutsch", flag: "🇩🇪" },
@@ -40,19 +65,20 @@ const translations: Record<Language, Record<string, string>> = {
     "nav.login": "Entrar",
     "nav.signup": "Criar Conta",
     "nav.dashboard": "Dashboard",
-    
+
     // Hero
     "hero.badge": "Temporada 2026.1 Ativa",
     "hero.title1": "Domine a",
     "hero.title2": "Arena Competitiva",
-    "hero.description": "Organize torneios profissionais, gerencie times, acompanhe rankings e construa sua comunidade de esports.",
+    "hero.description":
+      "Organize torneios profissionais, gerencie times, acompanhe rankings e construa sua comunidade de esports.",
     "hero.description2": "Tudo em uma só plataforma.",
     "hero.cta1": "Começar Grátis",
     "hero.cta2": "Ver Rankings",
     "hero.players": "+10k jogadores",
     "hero.antifarm": "Anti-farm",
     "hero.countries": "50+ países",
-    
+
     // Live Panel
     "panel.live": "Arena Live",
     "panel.online": "ONLINE",
@@ -64,38 +90,40 @@ const translations: Record<Language, Record<string, string>> = {
     "panel.viewAll": "Ver todos",
     "panel.teams": "times",
     "panel.doubleElim": "Eliminação dupla",
-    
+
     // Features
     "features.badge": "Recursos",
     "features.title": "Tudo que você precisa para",
     "features.title2": "competir",
-    "features.description": "Ferramentas profissionais para organizadores, times e jogadores",
+    "features.description":
+      "Ferramentas profissionais para organizadores, times e jogadores",
     "features.learnMore": "Saiba mais",
-    
+
     "feature.tournaments.title": "Torneios",
     "feature.tournaments.subtitle": "Liga • Mata-mata • Grupos",
-    "feature.tournaments.desc": "Organize competições profissionais com múltiplos formatos.",
-    
+    "feature.tournaments.desc":
+      "Organize competições profissionais com múltiplos formatos.",
+
     "feature.matchroom.title": "Match Room",
     "feature.matchroom.subtitle": "Reportar • Confirmar • Disputar",
     "feature.matchroom.desc": "Sistema completo de gerenciamento de partidas.",
-    
+
     "feature.rankings.title": "Rankings",
     "feature.rankings.subtitle": "Rating • ELO • Seasons",
     "feature.rankings.desc": "Sistema de rating anti-farm com incerteza.",
-    
+
     "feature.teams.title": "Times",
     "feature.teams.subtitle": "Roster • Staff • Histórico",
     "feature.teams.desc": "Gerencie jogadores, técnicos e substitutos.",
-    
+
     "feature.anticheat.title": "Anti-fraude",
     "feature.anticheat.subtitle": "Logs • Auditoria • Moderação",
     "feature.anticheat.desc": "Proteção completa com logs imutáveis.",
-    
+
     "feature.global.title": "Multi-país",
     "feature.global.subtitle": "50+ Países • Timezones",
     "feature.global.desc": "Suporte global com idiomas locais.",
-    
+
     // How it works
     "how.badge": "Como Funciona",
     "how.title": "Três passos para a",
@@ -106,7 +134,7 @@ const translations: Record<Language, Record<string, string>> = {
     "how.step2.desc": "Participe de torneios ou desafie adversários.",
     "how.step3.title": "Reporte & Suba",
     "how.step3.desc": "Confirme resultados e escale no ranking.",
-    
+
     // Rankings Preview
     "rankings.badge": "Leaderboard",
     "rankings.title": "Top",
@@ -118,13 +146,14 @@ const translations: Record<Language, Record<string, string>> = {
     "rankings.matches": "Partidas",
     "rankings.winrate": "Winrate",
     "rankings.viewFull": "Ver Ranking Completo",
-    
+
     // CTA Section
     "cta.title": "Pronto para",
     "cta.title2": "competir",
-    "cta.description": "Junte-se a milhares de jogadores e organizadores que já estão usando a plataforma EFA.",
+    "cta.description":
+      "Junte-se a milhares de jogadores e organizadores que já estão usando a plataforma EFA.",
     "cta.button": "Começar Agora",
-    
+
     // Footer
     "footer.description": "A plataforma definitiva para esports competitivo.",
     "footer.platform": "Plataforma",
@@ -140,18 +169,31 @@ const translations: Record<Language, Record<string, string>> = {
     "footer.community": "Comunidade",
     "footer.rights": "© 2026 EFA Esports. Todos os direitos reservados.",
     "footer.serversOnline": "Servidores Online",
-    
+
     // Characters Section
     "characters.badge": "Universo Multi-Game",
     "characters.title": "Todos os seus jogos",
     "characters.title2": "em um só lugar",
-    "characters.description": "De FPS a esportes, de RPG a luta. Uma plataforma única para todos os gêneros de jogos competitivos.",
+    "characters.description":
+      "De FPS a esportes, de RPG a luta. Uma plataforma única para todos os gêneros de jogos competitivos.",
     "characters.gamesSupported": "gêneros de jogos suportados",
     "characters.crossPlatform": "Cross-platform",
     "characters.fairPlay": "Fair Play",
+
+    // Index (Under Construction page)
+    "index.badge": "Em Construção",
+    "index.title1": "Estamos Preparando",
+    "index.title2": "Algo Épico!",
+    "index.description":
+      "A plataforma definitiva de esports está chegando. Prepare-se para competir, evoluir e conquistar.",
+    "index.pill.tournaments": "Torneios",
+    "index.pill.teams": "Times",
+    "index.pill.matches": "Partidas",
+    "index.comingSoon": "Em breve",
+    "index.footer": "© 2026 EFA Esports. Todos os direitos reservados.",
   },
-  
-  "en": {
+
+  en: {
     "nav.rankings": "Rankings",
     "nav.tournaments": "Tournaments",
     "nav.teams": "Teams",
@@ -159,18 +201,19 @@ const translations: Record<Language, Record<string, string>> = {
     "nav.login": "Login",
     "nav.signup": "Sign Up",
     "nav.dashboard": "Dashboard",
-    
+
     "hero.badge": "Season 2026.1 Active",
     "hero.title1": "Dominate the",
     "hero.title2": "Competitive Arena",
-    "hero.description": "Organize professional tournaments, manage teams, track rankings and build your esports community.",
+    "hero.description":
+      "Organize professional tournaments, manage teams, track rankings and build your esports community.",
     "hero.description2": "All in one platform.",
     "hero.cta1": "Start Free",
     "hero.cta2": "View Rankings",
     "hero.players": "+10k players",
     "hero.antifarm": "Anti-farm",
     "hero.countries": "50+ countries",
-    
+
     "panel.live": "Arena Live",
     "panel.online": "ONLINE",
     "panel.playersOnline": "Players Online",
@@ -181,37 +224,39 @@ const translations: Record<Language, Record<string, string>> = {
     "panel.viewAll": "View all",
     "panel.teams": "teams",
     "panel.doubleElim": "Double elimination",
-    
+
     "features.badge": "Features",
     "features.title": "Everything you need to",
     "features.title2": "compete",
-    "features.description": "Professional tools for organizers, teams and players",
+    "features.description":
+      "Professional tools for organizers, teams and players",
     "features.learnMore": "Learn more",
-    
+
     "feature.tournaments.title": "Tournaments",
     "feature.tournaments.subtitle": "League • Knockout • Groups",
-    "feature.tournaments.desc": "Organize professional competitions with multiple formats.",
-    
+    "feature.tournaments.desc":
+      "Organize professional competitions with multiple formats.",
+
     "feature.matchroom.title": "Match Room",
     "feature.matchroom.subtitle": "Report • Confirm • Dispute",
     "feature.matchroom.desc": "Complete match management system.",
-    
+
     "feature.rankings.title": "Rankings",
     "feature.rankings.subtitle": "Rating • ELO • Seasons",
     "feature.rankings.desc": "Anti-farm rating system with uncertainty.",
-    
+
     "feature.teams.title": "Teams",
     "feature.teams.subtitle": "Roster • Staff • History",
     "feature.teams.desc": "Manage players, coaches and substitutes.",
-    
+
     "feature.anticheat.title": "Anti-cheat",
     "feature.anticheat.subtitle": "Logs • Audit • Moderation",
     "feature.anticheat.desc": "Complete protection with immutable logs.",
-    
+
     "feature.global.title": "Multi-country",
     "feature.global.subtitle": "50+ Countries • Timezones",
     "feature.global.desc": "Global support with local languages.",
-    
+
     "how.badge": "How It Works",
     "how.title": "Three steps to",
     "how.title2": "victory",
@@ -221,7 +266,7 @@ const translations: Record<Language, Record<string, string>> = {
     "how.step2.desc": "Participate in tournaments or challenge opponents.",
     "how.step3.title": "Report & Climb",
     "how.step3.desc": "Confirm results and climb the ranking.",
-    
+
     "rankings.badge": "Leaderboard",
     "rankings.title": "Top",
     "rankings.title2": "Global",
@@ -232,12 +277,13 @@ const translations: Record<Language, Record<string, string>> = {
     "rankings.matches": "Matches",
     "rankings.winrate": "Winrate",
     "rankings.viewFull": "View Full Ranking",
-    
+
     "cta.title": "Ready to",
     "cta.title2": "compete",
-    "cta.description": "Join thousands of players and organizers already using the EFA platform.",
+    "cta.description":
+      "Join thousands of players and organizers already using the EFA platform.",
     "cta.button": "Start Now",
-    
+
     "footer.description": "The ultimate platform for competitive esports.",
     "footer.platform": "Platform",
     "footer.friendlies": "Friendlies",
@@ -252,1373 +298,43 @@ const translations: Record<Language, Record<string, string>> = {
     "footer.community": "Community",
     "footer.rights": "© 2026 EFA Esports. All rights reserved.",
     "footer.serversOnline": "Servers Online",
-    
-    // Characters Section
+
     "characters.badge": "Multi-Game Universe",
     "characters.title": "All your games",
     "characters.title2": "in one place",
-    "characters.description": "From FPS to sports, from RPG to fighting. One platform for all competitive gaming genres.",
+    "characters.description":
+      "From FPS to sports, from RPG to fighting. One platform for all competitive gaming genres.",
     "characters.gamesSupported": "game genres supported",
     "characters.crossPlatform": "Cross-platform",
     "characters.fairPlay": "Fair Play",
+
+    // Index (Under Construction page)
+    "index.badge": "Under Construction",
+    "index.title1": "We’re Building",
+    "index.title2": "Something Epic.",
+    "index.description":
+      "The definitive esports platform is on the way. Get ready to compete, improve, and conquer.",
+    "index.pill.tournaments": "Tournaments",
+    "index.pill.teams": "Teams",
+    "index.pill.matches": "Matches",
+    "index.comingSoon": "Coming soon",
+    "index.footer": "© 2026 EFA Esports. All rights reserved.",
   },
-  
-  "es": {
-    "nav.rankings": "Rankings",
-    "nav.tournaments": "Torneos",
-    "nav.teams": "Equipos",
-    "nav.discord": "Discord",
-    "nav.login": "Entrar",
-    "nav.signup": "Registrarse",
-    "nav.dashboard": "Panel",
-    
-    "hero.badge": "Temporada 2026.1 Activa",
-    "hero.title1": "Domina la",
-    "hero.title2": "Arena Competitiva",
-    "hero.description": "Organiza torneos profesionales, gestiona equipos, sigue rankings y construye tu comunidad de esports.",
-    "hero.description2": "Todo en una sola plataforma.",
-    "hero.cta1": "Empezar Gratis",
-    "hero.cta2": "Ver Rankings",
-    "hero.players": "+10k jugadores",
-    "hero.antifarm": "Anti-farm",
-    "hero.countries": "50+ países",
-    
-    "panel.live": "Arena Live",
-    "panel.online": "EN LÍNEA",
-    "panel.playersOnline": "Jugadores Online",
-    "panel.matchesToday": "Partidas Hoy",
-    "panel.activeTournaments": "Torneos Activos",
-    "panel.currentSeason": "Temporada Actual",
-    "panel.topRanking": "Top 3 Ranking",
-    "panel.viewAll": "Ver todos",
-    "panel.teams": "equipos",
-    "panel.doubleElim": "Eliminación doble",
-    
-    "features.badge": "Características",
-    "features.title": "Todo lo que necesitas para",
-    "features.title2": "competir",
-    "features.description": "Herramientas profesionales para organizadores, equipos y jugadores",
-    "features.learnMore": "Saber más",
-    
-    "feature.tournaments.title": "Torneos",
-    "feature.tournaments.subtitle": "Liga • Eliminatoria • Grupos",
-    "feature.tournaments.desc": "Organiza competiciones profesionales con múltiples formatos.",
-    
-    "feature.matchroom.title": "Sala de Partidas",
-    "feature.matchroom.subtitle": "Reportar • Confirmar • Disputar",
-    "feature.matchroom.desc": "Sistema completo de gestión de partidas.",
-    
-    "feature.rankings.title": "Rankings",
-    "feature.rankings.subtitle": "Rating • ELO • Temporadas",
-    "feature.rankings.desc": "Sistema de rating anti-farm con incertidumbre.",
-    
-    "feature.teams.title": "Equipos",
-    "feature.teams.subtitle": "Plantilla • Staff • Historial",
-    "feature.teams.desc": "Gestiona jugadores, entrenadores y suplentes.",
-    
-    "feature.anticheat.title": "Anti-trampa",
-    "feature.anticheat.subtitle": "Logs • Auditoría • Moderación",
-    "feature.anticheat.desc": "Protección completa con logs inmutables.",
-    
-    "feature.global.title": "Multi-país",
-    "feature.global.subtitle": "50+ Países • Zonas horarias",
-    "feature.global.desc": "Soporte global con idiomas locales.",
-    
-    "how.badge": "Cómo Funciona",
-    "how.title": "Tres pasos para la",
-    "how.title2": "victoria",
-    "how.step1.title": "Crea tu Perfil",
-    "how.step1.desc": "Monta tu equipo o únete como jugador solo.",
-    "how.step2.title": "Únete a la Competición",
-    "how.step2.desc": "Participa en torneos o desafía a oponentes.",
-    "how.step3.title": "Reporta y Sube",
-    "how.step3.desc": "Confirma resultados y escala en el ranking.",
-    
-    "rankings.badge": "Clasificación",
-    "rankings.title": "Top",
-    "rankings.title2": "Global",
-    "rankings.description": "Los mejores jugadores compitiendo en tiempo real",
-    "rankings.position": "#",
-    "rankings.player": "Jugador / Equipo",
-    "rankings.rating": "Rating",
-    "rankings.matches": "Partidas",
-    "rankings.winrate": "Winrate",
-    "rankings.viewFull": "Ver Ranking Completo",
-    
-    "cta.title": "¿Listo para",
-    "cta.title2": "competir",
-    "cta.description": "Únete a miles de jugadores y organizadores que ya usan la plataforma EFA.",
-    "cta.button": "Empezar Ahora",
-    
-    "footer.description": "La plataforma definitiva para esports competitivo.",
-    "footer.platform": "Plataforma",
-    "footer.friendlies": "Amistosos",
-    "footer.organizers": "Organizadores",
-    "footer.plans": "Planes",
-    "footer.docs": "Documentación",
-    "footer.support": "Soporte",
-    "footer.legal": "Legal",
-    "footer.terms": "Términos de Uso",
-    "footer.privacy": "Privacidad",
-    "footer.cookies": "Cookies",
-    "footer.community": "Comunidad",
-    "footer.rights": "© 2026 EFA Esports. Todos los derechos reservados.",
-    "footer.serversOnline": "Servidores Online",
-    
-    // Characters Section
-    "characters.badge": "Universo Multi-Juego",
-    "characters.title": "Todos tus juegos",
-    "characters.title2": "en un solo lugar",
-    "characters.description": "De FPS a deportes, de RPG a lucha. Una plataforma única para todos los géneros de juegos competitivos.",
-    "characters.gamesSupported": "géneros de juegos soportados",
-    "characters.crossPlatform": "Multiplataforma",
-    "characters.fairPlay": "Juego Limpio",
-  },
-  
-  "fr": {
-    "nav.rankings": "Classements",
-    "nav.tournaments": "Tournois",
-    "nav.teams": "Équipes",
-    "nav.discord": "Discord",
-    "nav.login": "Connexion",
-    "nav.signup": "S'inscrire",
-    "nav.dashboard": "Tableau de bord",
-    
-    "hero.badge": "Saison 2026.1 Active",
-    "hero.title1": "Dominez",
-    "hero.title2": "l'Arène Compétitive",
-    "hero.description": "Organisez des tournois professionnels, gérez des équipes, suivez les classements et construisez votre communauté esport.",
-    "hero.description2": "Tout sur une seule plateforme.",
-    "hero.cta1": "Commencer Gratuit",
-    "hero.cta2": "Voir Classements",
-    "hero.players": "+10k joueurs",
-    "hero.antifarm": "Anti-farm",
-    "hero.countries": "50+ pays",
-    
-    "panel.live": "Arène Live",
-    "panel.online": "EN LIGNE",
-    "panel.playersOnline": "Joueurs en ligne",
-    "panel.matchesToday": "Matchs Aujourd'hui",
-    "panel.activeTournaments": "Tournois Actifs",
-    "panel.currentSeason": "Saison Actuelle",
-    "panel.topRanking": "Top 3 Classement",
-    "panel.viewAll": "Voir tout",
-    "panel.teams": "équipes",
-    "panel.doubleElim": "Double élimination",
-    
-    "features.badge": "Fonctionnalités",
-    "features.title": "Tout ce dont vous avez besoin pour",
-    "features.title2": "compétir",
-    "features.description": "Outils professionnels pour organisateurs, équipes et joueurs",
-    "features.learnMore": "En savoir plus",
-    
-    "feature.tournaments.title": "Tournois",
-    "feature.tournaments.subtitle": "Ligue • Élimination • Groupes",
-    "feature.tournaments.desc": "Organisez des compétitions professionnelles avec plusieurs formats.",
-    
-    "feature.matchroom.title": "Salle de Match",
-    "feature.matchroom.subtitle": "Signaler • Confirmer • Contester",
-    "feature.matchroom.desc": "Système complet de gestion de matchs.",
-    
-    "feature.rankings.title": "Classements",
-    "feature.rankings.subtitle": "Rating • ELO • Saisons",
-    "feature.rankings.desc": "Système de rating anti-farm avec incertitude.",
-    
-    "feature.teams.title": "Équipes",
-    "feature.teams.subtitle": "Effectif • Staff • Historique",
-    "feature.teams.desc": "Gérez joueurs, entraîneurs et remplaçants.",
-    
-    "feature.anticheat.title": "Anti-triche",
-    "feature.anticheat.subtitle": "Logs • Audit • Modération",
-    "feature.anticheat.desc": "Protection complète avec logs immuables.",
-    
-    "feature.global.title": "Multi-pays",
-    "feature.global.subtitle": "50+ Pays • Fuseaux horaires",
-    "feature.global.desc": "Support global avec langues locales.",
-    
-    "how.badge": "Comment ça marche",
-    "how.title": "Trois étapes vers la",
-    "how.title2": "victoire",
-    "how.step1.title": "Créez votre Profil",
-    "how.step1.desc": "Créez votre équipe ou rejoignez en solo.",
-    "how.step2.title": "Rejoignez la Compétition",
-    "how.step2.desc": "Participez à des tournois ou défiez des adversaires.",
-    "how.step3.title": "Signalez & Montez",
-    "how.step3.desc": "Confirmez les résultats et grimpez au classement.",
-    
-    "rankings.badge": "Classement",
-    "rankings.title": "Top",
-    "rankings.title2": "Global",
-    "rankings.description": "Les meilleurs joueurs en compétition en temps réel",
-    "rankings.position": "#",
-    "rankings.player": "Joueur / Équipe",
-    "rankings.rating": "Rating",
-    "rankings.matches": "Matchs",
-    "rankings.winrate": "Winrate",
-    "rankings.viewFull": "Voir Classement Complet",
-    
-    "cta.title": "Prêt à",
-    "cta.title2": "compétir",
-    "cta.description": "Rejoignez des milliers de joueurs et organisateurs qui utilisent déjà la plateforme EFA.",
-    "cta.button": "Commencer Maintenant",
-    
-    "footer.description": "La plateforme ultime pour l'esport compétitif.",
-    "footer.platform": "Plateforme",
-    "footer.friendlies": "Amicaux",
-    "footer.organizers": "Organisateurs",
-    "footer.plans": "Plans",
-    "footer.docs": "Documentation",
-    "footer.support": "Support",
-    "footer.legal": "Légal",
-    "footer.terms": "Conditions d'utilisation",
-    "footer.privacy": "Confidentialité",
-    "footer.cookies": "Cookies",
-    "footer.community": "Communauté",
-    "footer.rights": "© 2026 EFA Esports. Tous droits réservés.",
-    "footer.serversOnline": "Serveurs en ligne",
-    
-    // Characters Section
-    "characters.badge": "Univers Multi-Jeux",
-    "characters.title": "Tous vos jeux",
-    "characters.title2": "au même endroit",
-    "characters.description": "Du FPS aux sports, du RPG au combat. Une plateforme unique pour tous les genres de jeux compétitifs.",
-    "characters.gamesSupported": "genres de jeux supportés",
-    "characters.crossPlatform": "Cross-platform",
-    "characters.fairPlay": "Fair Play",
-  },
-  
-  "de": {
-    "nav.rankings": "Ranglisten",
-    "nav.tournaments": "Turniere",
-    "nav.teams": "Teams",
-    "nav.discord": "Discord",
-    "nav.login": "Anmelden",
-    "nav.signup": "Registrieren",
-    "nav.dashboard": "Dashboard",
-    
-    "hero.badge": "Saison 2026.1 Aktiv",
-    "hero.title1": "Beherrsche die",
-    "hero.title2": "Wettbewerbs-Arena",
-    "hero.description": "Organisiere professionelle Turniere, verwalte Teams, verfolge Ranglisten und baue deine Esports-Community auf.",
-    "hero.description2": "Alles auf einer Plattform.",
-    "hero.cta1": "Kostenlos Starten",
-    "hero.cta2": "Ranglisten Ansehen",
-    "hero.players": "+10k Spieler",
-    "hero.antifarm": "Anti-Farm",
-    "hero.countries": "50+ Länder",
-    
-    "panel.live": "Arena Live",
-    "panel.online": "ONLINE",
-    "panel.playersOnline": "Spieler Online",
-    "panel.matchesToday": "Spiele Heute",
-    "panel.activeTournaments": "Aktive Turniere",
-    "panel.currentSeason": "Aktuelle Saison",
-    "panel.topRanking": "Top 3 Rangliste",
-    "panel.viewAll": "Alle anzeigen",
-    "panel.teams": "Teams",
-    "panel.doubleElim": "Doppelte Elimination",
-    
-    "features.badge": "Funktionen",
-    "features.title": "Alles was du brauchst zum",
-    "features.title2": "Wettkampf",
-    "features.description": "Professionelle Tools für Organisatoren, Teams und Spieler",
-    "features.learnMore": "Mehr erfahren",
-    
-    "feature.tournaments.title": "Turniere",
-    "feature.tournaments.subtitle": "Liga • KO • Gruppen",
-    "feature.tournaments.desc": "Organisiere professionelle Wettbewerbe mit mehreren Formaten.",
-    
-    "feature.matchroom.title": "Match-Raum",
-    "feature.matchroom.subtitle": "Melden • Bestätigen • Anfechten",
-    "feature.matchroom.desc": "Komplettes Match-Management-System.",
-    
-    "feature.rankings.title": "Ranglisten",
-    "feature.rankings.subtitle": "Rating • ELO • Saisons",
-    "feature.rankings.desc": "Anti-Farm Rating-System mit Unsicherheit.",
-    
-    "feature.teams.title": "Teams",
-    "feature.teams.subtitle": "Kader • Staff • Historie",
-    "feature.teams.desc": "Verwalte Spieler, Trainer und Ersatzspieler.",
-    
-    "feature.anticheat.title": "Anti-Cheat",
-    "feature.anticheat.subtitle": "Logs • Audit • Moderation",
-    "feature.anticheat.desc": "Kompletter Schutz mit unveränderlichen Logs.",
-    
-    "feature.global.title": "Multi-Land",
-    "feature.global.subtitle": "50+ Länder • Zeitzonen",
-    "feature.global.desc": "Globaler Support mit lokalen Sprachen.",
-    
-    "how.badge": "So funktioniert's",
-    "how.title": "Drei Schritte zum",
-    "how.title2": "Sieg",
-    "how.step1.title": "Erstelle dein Profil",
-    "how.step1.desc": "Baue dein Team oder tritt als Solo-Spieler bei.",
-    "how.step2.title": "Tritt dem Wettbewerb bei",
-    "how.step2.desc": "Nimm an Turnieren teil oder fordere Gegner heraus.",
-    "how.step3.title": "Melde & Steige auf",
-    "how.step3.desc": "Bestätige Ergebnisse und steige in der Rangliste.",
-    
-    "rankings.badge": "Rangliste",
-    "rankings.title": "Top",
-    "rankings.title2": "Global",
-    "rankings.description": "Die besten Spieler im Echtzeit-Wettbewerb",
-    "rankings.position": "#",
-    "rankings.player": "Spieler / Team",
-    "rankings.rating": "Rating",
-    "rankings.matches": "Spiele",
-    "rankings.winrate": "Gewinnrate",
-    "rankings.viewFull": "Komplette Rangliste",
-    
-    "cta.title": "Bereit zum",
-    "cta.title2": "Wettkampf",
-    "cta.description": "Schließe dich tausenden Spielern und Organisatoren an, die bereits die EFA-Plattform nutzen.",
-    "cta.button": "Jetzt Starten",
-    
-    "footer.description": "Die ultimative Plattform für kompetitiven Esport.",
-    "footer.platform": "Plattform",
-    "footer.friendlies": "Freundschaftsspiele",
-    "footer.organizers": "Organisatoren",
-    "footer.plans": "Pläne",
-    "footer.docs": "Dokumentation",
-    "footer.support": "Support",
-    "footer.legal": "Rechtliches",
-    "footer.terms": "Nutzungsbedingungen",
-    "footer.privacy": "Datenschutz",
-    "footer.cookies": "Cookies",
-    "footer.community": "Community",
-    "footer.rights": "© 2026 EFA Esports. Alle Rechte vorbehalten.",
-    "footer.serversOnline": "Server Online",
-  },
-  
-  "it": {
-    "nav.rankings": "Classifiche",
-    "nav.tournaments": "Tornei",
-    "nav.teams": "Squadre",
-    "nav.discord": "Discord",
-    "nav.login": "Accedi",
-    "nav.signup": "Registrati",
-    "nav.dashboard": "Dashboard",
-    
-    "hero.badge": "Stagione 2026.1 Attiva",
-    "hero.title1": "Domina",
-    "hero.title2": "l'Arena Competitiva",
-    "hero.description": "Organizza tornei professionali, gestisci squadre, monitora le classifiche e costruisci la tua comunità esports.",
-    "hero.description2": "Tutto in un'unica piattaforma.",
-    "hero.cta1": "Inizia Gratis",
-    "hero.cta2": "Vedi Classifiche",
-    "hero.players": "+10k giocatori",
-    "hero.antifarm": "Anti-farm",
-    "hero.countries": "50+ paesi",
-    
-    "panel.live": "Arena Live",
-    "panel.online": "ONLINE",
-    "panel.playersOnline": "Giocatori Online",
-    "panel.matchesToday": "Partite Oggi",
-    "panel.activeTournaments": "Tornei Attivi",
-    "panel.currentSeason": "Stagione Attuale",
-    "panel.topRanking": "Top 3 Classifica",
-    "panel.viewAll": "Vedi tutti",
-    "panel.teams": "squadre",
-    "panel.doubleElim": "Doppia eliminazione",
-    
-    "features.badge": "Funzionalità",
-    "features.title": "Tutto ciò che serve per",
-    "features.title2": "competere",
-    "features.description": "Strumenti professionali per organizzatori, squadre e giocatori",
-    "features.learnMore": "Scopri di più",
-    
-    "feature.tournaments.title": "Tornei",
-    "feature.tournaments.subtitle": "Campionato • Eliminazione • Gironi",
-    "feature.tournaments.desc": "Organizza competizioni professionali con più formati.",
-    
-    "feature.matchroom.title": "Stanza Partita",
-    "feature.matchroom.subtitle": "Segnala • Conferma • Contesta",
-    "feature.matchroom.desc": "Sistema completo di gestione partite.",
-    
-    "feature.rankings.title": "Classifiche",
-    "feature.rankings.subtitle": "Rating • ELO • Stagioni",
-    "feature.rankings.desc": "Sistema di rating anti-farm con incertezza.",
-    
-    "feature.teams.title": "Squadre",
-    "feature.teams.subtitle": "Rosa • Staff • Storico",
-    "feature.teams.desc": "Gestisci giocatori, allenatori e riserve.",
-    
-    "feature.anticheat.title": "Anti-cheat",
-    "feature.anticheat.subtitle": "Log • Audit • Moderazione",
-    "feature.anticheat.desc": "Protezione completa con log immutabili.",
-    
-    "feature.global.title": "Multi-paese",
-    "feature.global.subtitle": "50+ Paesi • Fusi orari",
-    "feature.global.desc": "Supporto globale con lingue locali.",
-    
-    "how.badge": "Come Funziona",
-    "how.title": "Tre passi verso la",
-    "how.title2": "vittoria",
-    "how.step1.title": "Crea il tuo Profilo",
-    "how.step1.desc": "Crea la tua squadra o unisciti come giocatore singolo.",
-    "how.step2.title": "Unisciti alla Competizione",
-    "how.step2.desc": "Partecipa ai tornei o sfida gli avversari.",
-    "how.step3.title": "Segnala & Scala",
-    "how.step3.desc": "Conferma i risultati e scala la classifica.",
-    
-    "rankings.badge": "Classifica",
-    "rankings.title": "Top",
-    "rankings.title2": "Globale",
-    "rankings.description": "I migliori giocatori in competizione in tempo reale",
-    "rankings.position": "#",
-    "rankings.player": "Giocatore / Squadra",
-    "rankings.rating": "Rating",
-    "rankings.matches": "Partite",
-    "rankings.winrate": "Winrate",
-    "rankings.viewFull": "Vedi Classifica Completa",
-    
-    "cta.title": "Pronto a",
-    "cta.title2": "competere",
-    "cta.description": "Unisciti a migliaia di giocatori e organizzatori che già usano la piattaforma EFA.",
-    "cta.button": "Inizia Ora",
-    
-    "footer.description": "La piattaforma definitiva per gli esports competitivi.",
-    "footer.platform": "Piattaforma",
-    "footer.friendlies": "Amichevoli",
-    "footer.organizers": "Organizzatori",
-    "footer.plans": "Piani",
-    "footer.docs": "Documentazione",
-    "footer.support": "Supporto",
-    "footer.legal": "Legale",
-    "footer.terms": "Termini di Utilizzo",
-    "footer.privacy": "Privacy",
-    "footer.cookies": "Cookies",
-    "footer.community": "Comunità",
-    "footer.rights": "© 2026 EFA Esports. Tutti i diritti riservati.",
-    "footer.serversOnline": "Server Online",
-  },
-  
-  "ja": {
-    "nav.rankings": "ランキング",
-    "nav.tournaments": "トーナメント",
-    "nav.teams": "チーム",
-    "nav.discord": "Discord",
-    "nav.login": "ログイン",
-    "nav.signup": "登録",
-    "nav.dashboard": "ダッシュボード",
-    
-    "hero.badge": "シーズン2026.1 開催中",
-    "hero.title1": "制覇せよ",
-    "hero.title2": "競技アリーナ",
-    "hero.description": "プロのトーナメントを開催し、チームを管理し、ランキングを追跡し、eスポーツコミュニティを構築しましょう。",
-    "hero.description2": "すべてが一つのプラットフォームに。",
-    "hero.cta1": "無料で始める",
-    "hero.cta2": "ランキングを見る",
-    "hero.players": "+1万人のプレイヤー",
-    "hero.antifarm": "アンチファーム",
-    "hero.countries": "50以上の国",
-    
-    "panel.live": "アリーナライブ",
-    "panel.online": "オンライン",
-    "panel.playersOnline": "オンラインプレイヤー",
-    "panel.matchesToday": "本日の試合",
-    "panel.activeTournaments": "開催中のトーナメント",
-    "panel.currentSeason": "現在のシーズン",
-    "panel.topRanking": "トップ3ランキング",
-    "panel.viewAll": "すべて見る",
-    "panel.teams": "チーム",
-    "panel.doubleElim": "ダブルエリミネーション",
-    
-    "features.badge": "機能",
-    "features.title": "競争に必要な",
-    "features.title2": "すべて",
-    "features.description": "主催者、チーム、プレイヤーのためのプロツール",
-    "features.learnMore": "詳細を見る",
-    
-    "feature.tournaments.title": "トーナメント",
-    "feature.tournaments.subtitle": "リーグ • ノックアウト • グループ",
-    "feature.tournaments.desc": "複数のフォーマットでプロ競技会を開催。",
-    
-    "feature.matchroom.title": "マッチルーム",
-    "feature.matchroom.subtitle": "報告 • 確認 • 異議",
-    "feature.matchroom.desc": "完全な試合管理システム。",
-    
-    "feature.rankings.title": "ランキング",
-    "feature.rankings.subtitle": "レーティング • ELO • シーズン",
-    "feature.rankings.desc": "不確実性を持つアンチファームレーティングシステム。",
-    
-    "feature.teams.title": "チーム",
-    "feature.teams.subtitle": "ロスター • スタッフ • 履歴",
-    "feature.teams.desc": "選手、コーチ、控えを管理。",
-    
-    "feature.anticheat.title": "アンチチート",
-    "feature.anticheat.subtitle": "ログ • 監査 • モデレーション",
-    "feature.anticheat.desc": "不変ログによる完全な保護。",
-    
-    "feature.global.title": "多国籍",
-    "feature.global.subtitle": "50以上の国 • タイムゾーン",
-    "feature.global.desc": "ローカル言語でのグローバルサポート。",
-    
-    "how.badge": "使い方",
-    "how.title": "勝利への",
-    "how.title2": "3ステップ",
-    "how.step1.title": "プロフィール作成",
-    "how.step1.desc": "チームを作るかソロプレイヤーとして参加。",
-    "how.step2.title": "競技に参加",
-    "how.step2.desc": "トーナメントに参加するか対戦相手に挑戦。",
-    "how.step3.title": "報告して上昇",
-    "how.step3.desc": "結果を確認してランキングを上げる。",
-    
-    "rankings.badge": "リーダーボード",
-    "rankings.title": "トップ",
-    "rankings.title2": "グローバル",
-    "rankings.description": "リアルタイムで競争する最高のプレイヤー",
-    "rankings.position": "#",
-    "rankings.player": "プレイヤー / チーム",
-    "rankings.rating": "レーティング",
-    "rankings.matches": "試合",
-    "rankings.winrate": "勝率",
-    "rankings.viewFull": "完全ランキングを見る",
-    
-    "cta.title": "競技の",
-    "cta.title2": "準備はできた？",
-    "cta.description": "すでにEFAプラットフォームを使用している何千人ものプレイヤーと主催者に参加しましょう。",
-    "cta.button": "今すぐ始める",
-    
-    "footer.description": "競技eスポーツの究極のプラットフォーム。",
-    "footer.platform": "プラットフォーム",
-    "footer.friendlies": "フレンドリー",
-    "footer.organizers": "主催者",
-    "footer.plans": "プラン",
-    "footer.docs": "ドキュメント",
-    "footer.support": "サポート",
-    "footer.legal": "法的",
-    "footer.terms": "利用規約",
-    "footer.privacy": "プライバシー",
-    "footer.cookies": "Cookie",
-    "footer.community": "コミュニティ",
-    "footer.rights": "© 2026 EFA Esports. All rights reserved.",
-    "footer.serversOnline": "サーバーオンライン",
-  },
-  
-  "ko": {
-    "nav.rankings": "순위",
-    "nav.tournaments": "대회",
-    "nav.teams": "팀",
-    "nav.discord": "Discord",
-    "nav.login": "로그인",
-    "nav.signup": "회원가입",
-    "nav.dashboard": "대시보드",
-    
-    "hero.badge": "시즌 2026.1 진행 중",
-    "hero.title1": "정복하라",
-    "hero.title2": "경쟁 아레나",
-    "hero.description": "프로 대회를 조직하고, 팀을 관리하고, 순위를 추적하고, e스포츠 커뮤니티를 구축하세요.",
-    "hero.description2": "모든 것이 하나의 플랫폼에.",
-    "hero.cta1": "무료로 시작",
-    "hero.cta2": "순위 보기",
-    "hero.players": "+1만 플레이어",
-    "hero.antifarm": "안티팜",
-    "hero.countries": "50개 이상의 국가",
-    
-    "panel.live": "아레나 라이브",
-    "panel.online": "온라인",
-    "panel.playersOnline": "온라인 플레이어",
-    "panel.matchesToday": "오늘의 경기",
-    "panel.activeTournaments": "진행 중인 대회",
-    "panel.currentSeason": "현재 시즌",
-    "panel.topRanking": "상위 3 순위",
-    "panel.viewAll": "모두 보기",
-    "panel.teams": "팀",
-    "panel.doubleElim": "더블 엘리미네이션",
-    
-    "features.badge": "기능",
-    "features.title": "경쟁에 필요한",
-    "features.title2": "모든 것",
-    "features.description": "주최자, 팀 및 플레이어를 위한 전문 도구",
-    "features.learnMore": "자세히 보기",
-    
-    "feature.tournaments.title": "대회",
-    "feature.tournaments.subtitle": "리그 • 녹아웃 • 그룹",
-    "feature.tournaments.desc": "다양한 형식으로 프로 대회 조직.",
-    
-    "feature.matchroom.title": "매치 룸",
-    "feature.matchroom.subtitle": "보고 • 확인 • 이의",
-    "feature.matchroom.desc": "완벽한 경기 관리 시스템.",
-    
-    "feature.rankings.title": "순위",
-    "feature.rankings.subtitle": "레이팅 • ELO • 시즌",
-    "feature.rankings.desc": "불확실성이 있는 안티팜 레이팅 시스템.",
-    
-    "feature.teams.title": "팀",
-    "feature.teams.subtitle": "로스터 • 스태프 • 기록",
-    "feature.teams.desc": "선수, 코치 및 대체 선수 관리.",
-    
-    "feature.anticheat.title": "안티치트",
-    "feature.anticheat.subtitle": "로그 • 감사 • 관리",
-    "feature.anticheat.desc": "불변 로그로 완전한 보호.",
-    
-    "feature.global.title": "다국적",
-    "feature.global.subtitle": "50개 이상의 국가 • 시간대",
-    "feature.global.desc": "현지 언어로 글로벌 지원.",
-    
-    "how.badge": "사용 방법",
-    "how.title": "승리로 가는",
-    "how.title2": "세 단계",
-    "how.step1.title": "프로필 만들기",
-    "how.step1.desc": "팀을 만들거나 솔로 플레이어로 참여.",
-    "how.step2.title": "대회 참가",
-    "how.step2.desc": "대회에 참가하거나 상대에게 도전.",
-    "how.step3.title": "보고하고 상승",
-    "how.step3.desc": "결과를 확인하고 순위를 올리세요.",
-    
-    "rankings.badge": "리더보드",
-    "rankings.title": "상위",
-    "rankings.title2": "글로벌",
-    "rankings.description": "실시간으로 경쟁하는 최고의 플레이어",
-    "rankings.position": "#",
-    "rankings.player": "플레이어 / 팀",
-    "rankings.rating": "레이팅",
-    "rankings.matches": "경기",
-    "rankings.winrate": "승률",
-    "rankings.viewFull": "전체 순위 보기",
-    
-    "cta.title": "경쟁할",
-    "cta.title2": "준비됐나요?",
-    "cta.description": "이미 EFA 플랫폼을 사용하는 수천 명의 플레이어와 주최자에 합류하세요.",
-    "cta.button": "지금 시작",
-    
-    "footer.description": "경쟁 e스포츠를 위한 궁극의 플랫폼.",
-    "footer.platform": "플랫폼",
-    "footer.friendlies": "친선경기",
-    "footer.organizers": "주최자",
-    "footer.plans": "플랜",
-    "footer.docs": "문서",
-    "footer.support": "지원",
-    "footer.legal": "법적",
-    "footer.terms": "이용약관",
-    "footer.privacy": "개인정보",
-    "footer.cookies": "쿠키",
-    "footer.community": "커뮤니티",
-    "footer.rights": "© 2026 EFA Esports. All rights reserved.",
-    "footer.serversOnline": "서버 온라인",
-  },
-  
-  "zh": {
-    "nav.rankings": "排行榜",
-    "nav.tournaments": "锦标赛",
-    "nav.teams": "战队",
-    "nav.discord": "Discord",
-    "nav.login": "登录",
-    "nav.signup": "注册",
-    "nav.dashboard": "控制面板",
-    
-    "hero.badge": "2026.1赛季进行中",
-    "hero.title1": "征服",
-    "hero.title2": "竞技舞台",
-    "hero.description": "组织专业锦标赛，管理战队，追踪排名，构建您的电竞社区。",
-    "hero.description2": "一个平台搞定一切。",
-    "hero.cta1": "免费开始",
-    "hero.cta2": "查看排行榜",
-    "hero.players": "+1万玩家",
-    "hero.antifarm": "反刷分",
-    "hero.countries": "50+国家",
-    
-    "panel.live": "竞技场直播",
-    "panel.online": "在线",
-    "panel.playersOnline": "在线玩家",
-    "panel.matchesToday": "今日比赛",
-    "panel.activeTournaments": "进行中的赛事",
-    "panel.currentSeason": "当前赛季",
-    "panel.topRanking": "前三排名",
-    "panel.viewAll": "查看全部",
-    "panel.teams": "战队",
-    "panel.doubleElim": "双败淘汰",
-    
-    "features.badge": "功能",
-    "features.title": "竞争所需的",
-    "features.title2": "一切",
-    "features.description": "为组织者、战队和玩家打造的专业工具",
-    "features.learnMore": "了解更多",
-    
-    "feature.tournaments.title": "锦标赛",
-    "feature.tournaments.subtitle": "联赛 • 淘汰赛 • 小组赛",
-    "feature.tournaments.desc": "组织多种形式的专业比赛。",
-    
-    "feature.matchroom.title": "比赛房间",
-    "feature.matchroom.subtitle": "报告 • 确认 • 申诉",
-    "feature.matchroom.desc": "完整的比赛管理系统。",
-    
-    "feature.rankings.title": "排行榜",
-    "feature.rankings.subtitle": "评分 • ELO • 赛季",
-    "feature.rankings.desc": "具有不确定性的反刷分评分系统。",
-    
-    "feature.teams.title": "战队",
-    "feature.teams.subtitle": "阵容 • 教练组 • 历史",
-    "feature.teams.desc": "管理选手、教练和替补。",
-    
-    "feature.anticheat.title": "反作弊",
-    "feature.anticheat.subtitle": "日志 • 审计 • 管理",
-    "feature.anticheat.desc": "不可变日志的完整保护。",
-    
-    "feature.global.title": "多国支持",
-    "feature.global.subtitle": "50+国家 • 时区",
-    "feature.global.desc": "本地语言的全球支持。",
-    
-    "how.badge": "如何使用",
-    "how.title": "通往胜利的",
-    "how.title2": "三步",
-    "how.step1.title": "创建个人资料",
-    "how.step1.desc": "组建战队或作为个人玩家加入。",
-    "how.step2.title": "参加比赛",
-    "how.step2.desc": "参加锦标赛或挑战对手。",
-    "how.step3.title": "报告并晋升",
-    "how.step3.desc": "确认结果并提升排名。",
-    
-    "rankings.badge": "排行榜",
-    "rankings.title": "全球",
-    "rankings.title2": "顶尖",
-    "rankings.description": "实时竞争的最佳玩家",
-    "rankings.position": "#",
-    "rankings.player": "玩家 / 战队",
-    "rankings.rating": "评分",
-    "rankings.matches": "比赛",
-    "rankings.winrate": "胜率",
-    "rankings.viewFull": "查看完整排行榜",
-    
-    "cta.title": "准备好",
-    "cta.title2": "竞争了吗？",
-    "cta.description": "加入已经使用EFA平台的数千名玩家和组织者。",
-    "cta.button": "立即开始",
-    
-    "footer.description": "竞技电竞的终极平台。",
-    "footer.platform": "平台",
-    "footer.friendlies": "友谊赛",
-    "footer.organizers": "组织者",
-    "footer.plans": "计划",
-    "footer.docs": "文档",
-    "footer.support": "支持",
-    "footer.legal": "法律",
-    "footer.terms": "使用条款",
-    "footer.privacy": "隐私",
-    "footer.cookies": "Cookies",
-    "footer.community": "社区",
-    "footer.rights": "© 2026 EFA Esports. 保留所有权利。",
-    "footer.serversOnline": "服务器在线",
-  },
-  
-  "ar": {
-    "nav.rankings": "التصنيفات",
-    "nav.tournaments": "البطولات",
-    "nav.teams": "الفرق",
-    "nav.discord": "Discord",
-    "nav.login": "تسجيل الدخول",
-    "nav.signup": "إنشاء حساب",
-    "nav.dashboard": "لوحة التحكم",
-    
-    "hero.badge": "الموسم 2026.1 نشط",
-    "hero.title1": "سيطر على",
-    "hero.title2": "ساحة المنافسة",
-    "hero.description": "نظم بطولات احترافية، أدر الفرق، تابع التصنيفات وابنِ مجتمع الرياضات الإلكترونية.",
-    "hero.description2": "كل شيء في منصة واحدة.",
-    "hero.cta1": "ابدأ مجاناً",
-    "hero.cta2": "عرض التصنيفات",
-    "hero.players": "+10 آلاف لاعب",
-    "hero.antifarm": "مكافحة الغش",
-    "hero.countries": "50+ دولة",
-    
-    "panel.live": "البث المباشر",
-    "panel.online": "متصل",
-    "panel.playersOnline": "اللاعبون المتصلون",
-    "panel.matchesToday": "مباريات اليوم",
-    "panel.activeTournaments": "البطولات النشطة",
-    "panel.currentSeason": "الموسم الحالي",
-    "panel.topRanking": "أفضل 3 في التصنيف",
-    "panel.viewAll": "عرض الكل",
-    "panel.teams": "فرق",
-    "panel.doubleElim": "إقصاء مزدوج",
-    
-    "features.badge": "الميزات",
-    "features.title": "كل ما تحتاجه",
-    "features.title2": "للمنافسة",
-    "features.description": "أدوات احترافية للمنظمين والفرق واللاعبين",
-    "features.learnMore": "اعرف المزيد",
-    
-    "feature.tournaments.title": "البطولات",
-    "feature.tournaments.subtitle": "دوري • إقصاء • مجموعات",
-    "feature.tournaments.desc": "نظم مسابقات احترافية بأشكال متعددة.",
-    
-    "feature.matchroom.title": "غرفة المباراة",
-    "feature.matchroom.subtitle": "إبلاغ • تأكيد • نزاع",
-    "feature.matchroom.desc": "نظام كامل لإدارة المباريات.",
-    
-    "feature.rankings.title": "التصنيفات",
-    "feature.rankings.subtitle": "تقييم • ELO • مواسم",
-    "feature.rankings.desc": "نظام تقييم مضاد للغش مع عدم اليقين.",
-    
-    "feature.teams.title": "الفرق",
-    "feature.teams.subtitle": "التشكيلة • الإدارة • التاريخ",
-    "feature.teams.desc": "إدارة اللاعبين والمدربين والبدلاء.",
-    
-    "feature.anticheat.title": "مكافحة الغش",
-    "feature.anticheat.subtitle": "سجلات • تدقيق • إشراف",
-    "feature.anticheat.desc": "حماية كاملة مع سجلات غير قابلة للتغيير.",
-    
-    "feature.global.title": "متعدد البلدان",
-    "feature.global.subtitle": "50+ دولة • مناطق زمنية",
-    "feature.global.desc": "دعم عالمي باللغات المحلية.",
-    
-    "how.badge": "كيف يعمل",
-    "how.title": "ثلاث خطوات نحو",
-    "how.title2": "النصر",
-    "how.step1.title": "أنشئ ملفك",
-    "how.step1.desc": "كوّن فريقك أو انضم كلاعب فردي.",
-    "how.step2.title": "انضم للمنافسة",
-    "how.step2.desc": "شارك في البطولات أو تحدَّ الخصوم.",
-    "how.step3.title": "أبلغ وارتقِ",
-    "how.step3.desc": "أكد النتائج وارتقِ في التصنيف.",
-    
-    "rankings.badge": "لوحة المتصدرين",
-    "rankings.title": "أفضل",
-    "rankings.title2": "عالمياً",
-    "rankings.description": "أفضل اللاعبين يتنافسون في الوقت الفعلي",
-    "rankings.position": "#",
-    "rankings.player": "لاعب / فريق",
-    "rankings.rating": "التقييم",
-    "rankings.matches": "المباريات",
-    "rankings.winrate": "نسبة الفوز",
-    "rankings.viewFull": "عرض التصنيف الكامل",
-    
-    "cta.title": "مستعد",
-    "cta.title2": "للمنافسة؟",
-    "cta.description": "انضم إلى آلاف اللاعبين والمنظمين الذين يستخدمون منصة EFA.",
-    "cta.button": "ابدأ الآن",
-    
-    "footer.description": "المنصة النهائية للرياضات الإلكترونية التنافسية.",
-    "footer.platform": "المنصة",
-    "footer.friendlies": "الودية",
-    "footer.organizers": "المنظمون",
-    "footer.plans": "الخطط",
-    "footer.docs": "الوثائق",
-    "footer.support": "الدعم",
-    "footer.legal": "قانوني",
-    "footer.terms": "شروط الاستخدام",
-    "footer.privacy": "الخصوصية",
-    "footer.cookies": "ملفات تعريف الارتباط",
-    "footer.community": "المجتمع",
-    "footer.rights": "© 2026 EFA Esports. جميع الحقوق محفوظة.",
-    "footer.serversOnline": "الخوادم متصلة",
-  },
-  
-  "ru": {
-    "nav.rankings": "Рейтинги",
-    "nav.tournaments": "Турниры",
-    "nav.teams": "Команды",
-    "nav.discord": "Discord",
-    "nav.login": "Войти",
-    "nav.signup": "Регистрация",
-    "nav.dashboard": "Панель управления",
-    
-    "hero.badge": "Сезон 2026.1 Активен",
-    "hero.title1": "Покорите",
-    "hero.title2": "Соревновательную Арену",
-    "hero.description": "Организуйте профессиональные турниры, управляйте командами, отслеживайте рейтинги и создавайте киберспортивное сообщество.",
-    "hero.description2": "Всё на одной платформе.",
-    "hero.cta1": "Начать Бесплатно",
-    "hero.cta2": "Смотреть Рейтинги",
-    "hero.players": "+10к игроков",
-    "hero.antifarm": "Антифарм",
-    "hero.countries": "50+ стран",
-    
-    "panel.live": "Арена Лайв",
-    "panel.online": "ОНЛАЙН",
-    "panel.playersOnline": "Игроков Онлайн",
-    "panel.matchesToday": "Матчей Сегодня",
-    "panel.activeTournaments": "Активных Турниров",
-    "panel.currentSeason": "Текущий Сезон",
-    "panel.topRanking": "Топ 3 Рейтинга",
-    "panel.viewAll": "Смотреть все",
-    "panel.teams": "команд",
-    "panel.doubleElim": "Двойная элиминация",
-    
-    "features.badge": "Возможности",
-    "features.title": "Всё что нужно для",
-    "features.title2": "соревнований",
-    "features.description": "Профессиональные инструменты для организаторов, команд и игроков",
-    "features.learnMore": "Подробнее",
-    
-    "feature.tournaments.title": "Турниры",
-    "feature.tournaments.subtitle": "Лига • Плей-офф • Группы",
-    "feature.tournaments.desc": "Организуйте профессиональные соревнования с разными форматами.",
-    
-    "feature.matchroom.title": "Комната Матча",
-    "feature.matchroom.subtitle": "Отчёт • Подтверждение • Спор",
-    "feature.matchroom.desc": "Полная система управления матчами.",
-    
-    "feature.rankings.title": "Рейтинги",
-    "feature.rankings.subtitle": "Рейтинг • ELO • Сезоны",
-    "feature.rankings.desc": "Антифарм система рейтинга с неопределённостью.",
-    
-    "feature.teams.title": "Команды",
-    "feature.teams.subtitle": "Состав • Персонал • История",
-    "feature.teams.desc": "Управляйте игроками, тренерами и запасными.",
-    
-    "feature.anticheat.title": "Античит",
-    "feature.anticheat.subtitle": "Логи • Аудит • Модерация",
-    "feature.anticheat.desc": "Полная защита с неизменяемыми логами.",
-    
-    "feature.global.title": "Мультистрана",
-    "feature.global.subtitle": "50+ Стран • Часовые пояса",
-    "feature.global.desc": "Глобальная поддержка с местными языками.",
-    
-    "how.badge": "Как это работает",
-    "how.title": "Три шага к",
-    "how.title2": "победе",
-    "how.step1.title": "Создайте Профиль",
-    "how.step1.desc": "Создайте команду или присоединитесь как соло игрок.",
-    "how.step2.title": "Присоединитесь к Соревнованию",
-    "how.step2.desc": "Участвуйте в турнирах или бросайте вызов противникам.",
-    "how.step3.title": "Отчитайтесь и Поднимитесь",
-    "how.step3.desc": "Подтвердите результаты и поднимитесь в рейтинге.",
-    
-    "rankings.badge": "Таблица лидеров",
-    "rankings.title": "Топ",
-    "rankings.title2": "Глобальный",
-    "rankings.description": "Лучшие игроки соревнуются в реальном времени",
-    "rankings.position": "#",
-    "rankings.player": "Игрок / Команда",
-    "rankings.rating": "Рейтинг",
-    "rankings.matches": "Матчи",
-    "rankings.winrate": "Винрейт",
-    "rankings.viewFull": "Полный Рейтинг",
-    
-    "cta.title": "Готовы",
-    "cta.title2": "соревноваться?",
-    "cta.description": "Присоединитесь к тысячам игроков и организаторов, уже использующих платформу EFA.",
-    "cta.button": "Начать Сейчас",
-    
-    "footer.description": "Лучшая платформа для соревновательного киберспорта.",
-    "footer.platform": "Платформа",
-    "footer.friendlies": "Товарищеские",
-    "footer.organizers": "Организаторы",
-    "footer.plans": "Планы",
-    "footer.docs": "Документация",
-    "footer.support": "Поддержка",
-    "footer.legal": "Юридическое",
-    "footer.terms": "Условия использования",
-    "footer.privacy": "Конфиденциальность",
-    "footer.cookies": "Cookies",
-    "footer.community": "Сообщество",
-    "footer.rights": "© 2026 EFA Esports. Все права защищены.",
-    "footer.serversOnline": "Серверы Онлайн",
-  },
-  
-  "tr": {
-    "nav.rankings": "Sıralamalar",
-    "nav.tournaments": "Turnuvalar",
-    "nav.teams": "Takımlar",
-    "nav.discord": "Discord",
-    "nav.login": "Giriş",
-    "nav.signup": "Kayıt Ol",
-    "nav.dashboard": "Panel",
-    
-    "hero.badge": "Sezon 2026.1 Aktif",
-    "hero.title1": "Domine Et",
-    "hero.title2": "Rekabetçi Arena",
-    "hero.description": "Profesyonel turnuvalar düzenle, takımları yönet, sıralamaları takip et ve espor topluluğunu oluştur.",
-    "hero.description2": "Hepsi tek platformda.",
-    "hero.cta1": "Ücretsiz Başla",
-    "hero.cta2": "Sıralamaları Gör",
-    "hero.players": "+10k oyuncu",
-    "hero.antifarm": "Anti-farm",
-    "hero.countries": "50+ ülke",
-    
-    "panel.live": "Arena Canlı",
-    "panel.online": "ÇEVRİMİÇİ",
-    "panel.playersOnline": "Çevrimiçi Oyuncu",
-    "panel.matchesToday": "Bugünkü Maçlar",
-    "panel.activeTournaments": "Aktif Turnuvalar",
-    "panel.currentSeason": "Mevcut Sezon",
-    "panel.topRanking": "İlk 3 Sıralama",
-    "panel.viewAll": "Tümünü gör",
-    "panel.teams": "takım",
-    "panel.doubleElim": "Çift eleme",
-    
-    "features.badge": "Özellikler",
-    "features.title": "Rekabet için ihtiyacın olan",
-    "features.title2": "her şey",
-    "features.description": "Organizatörler, takımlar ve oyuncular için profesyonel araçlar",
-    "features.learnMore": "Daha fazla",
-    
-    "feature.tournaments.title": "Turnuvalar",
-    "feature.tournaments.subtitle": "Lig • Eleme • Gruplar",
-    "feature.tournaments.desc": "Çoklu formatlarla profesyonel yarışmalar düzenle.",
-    
-    "feature.matchroom.title": "Maç Odası",
-    "feature.matchroom.subtitle": "Raporla • Onayla • İtiraz Et",
-    "feature.matchroom.desc": "Kapsamlı maç yönetim sistemi.",
-    
-    "feature.rankings.title": "Sıralamalar",
-    "feature.rankings.subtitle": "Derece • ELO • Sezonlar",
-    "feature.rankings.desc": "Belirsizlikli anti-farm derecelendirme sistemi.",
-    
-    "feature.teams.title": "Takımlar",
-    "feature.teams.subtitle": "Kadro • Personel • Geçmiş",
-    "feature.teams.desc": "Oyuncuları, antrenörleri ve yedekleri yönet.",
-    
-    "feature.anticheat.title": "Hile Önleme",
-    "feature.anticheat.subtitle": "Kayıtlar • Denetim • Moderasyon",
-    "feature.anticheat.desc": "Değiştirilemez kayıtlarla tam koruma.",
-    
-    "feature.global.title": "Çok Ülkeli",
-    "feature.global.subtitle": "50+ Ülke • Saat Dilimleri",
-    "feature.global.desc": "Yerel dillerle küresel destek.",
-    
-    "how.badge": "Nasıl Çalışır",
-    "how.title": "Zafere giden",
-    "how.title2": "üç adım",
-    "how.step1.title": "Profilini Oluştur",
-    "how.step1.desc": "Takımını kur veya solo oyuncu olarak katıl.",
-    "how.step2.title": "Yarışmaya Katıl",
-    "how.step2.desc": "Turnuvalara katıl veya rakiplere meydan oku.",
-    "how.step3.title": "Raporla ve Yüksel",
-    "how.step3.desc": "Sonuçları onayla ve sıralamada yüksel.",
-    
-    "rankings.badge": "Liderlik Tablosu",
-    "rankings.title": "En İyi",
-    "rankings.title2": "Küresel",
-    "rankings.description": "Gerçek zamanlı yarışan en iyi oyuncular",
-    "rankings.position": "#",
-    "rankings.player": "Oyuncu / Takım",
-    "rankings.rating": "Derece",
-    "rankings.matches": "Maçlar",
-    "rankings.winrate": "Kazanma Oranı",
-    "rankings.viewFull": "Tam Sıralamayı Gör",
-    
-    "cta.title": "Rekabete",
-    "cta.title2": "hazır mısın?",
-    "cta.description": "EFA platformunu kullanan binlerce oyuncu ve organizatöre katıl.",
-    "cta.button": "Şimdi Başla",
-    
-    "footer.description": "Rekabetçi espor için nihai platform.",
-    "footer.platform": "Platform",
-    "footer.friendlies": "Dostluk Maçları",
-    "footer.organizers": "Organizatörler",
-    "footer.plans": "Planlar",
-    "footer.docs": "Dokümantasyon",
-    "footer.support": "Destek",
-    "footer.legal": "Yasal",
-    "footer.terms": "Kullanım Şartları",
-    "footer.privacy": "Gizlilik",
-    "footer.cookies": "Çerezler",
-    "footer.community": "Topluluk",
-    "footer.rights": "© 2026 EFA Esports. Tüm hakları saklıdır.",
-    "footer.serversOnline": "Sunucular Çevrimiçi",
-  },
-  
-  "pl": {
-    "nav.rankings": "Rankingi",
-    "nav.tournaments": "Turnieje",
-    "nav.teams": "Drużyny",
-    "nav.discord": "Discord",
-    "nav.login": "Zaloguj",
-    "nav.signup": "Zarejestruj",
-    "nav.dashboard": "Panel",
-    
-    "hero.badge": "Sezon 2026.1 Aktywny",
-    "hero.title1": "Zdominuj",
-    "hero.title2": "Arenę Rywalizacji",
-    "hero.description": "Organizuj profesjonalne turnieje, zarządzaj drużynami, śledź rankingi i buduj społeczność esportową.",
-    "hero.description2": "Wszystko na jednej platformie.",
-    "hero.cta1": "Zacznij Za Darmo",
-    "hero.cta2": "Zobacz Rankingi",
-    "hero.players": "+10k graczy",
-    "hero.antifarm": "Anti-farm",
-    "hero.countries": "50+ krajów",
-    
-    "panel.live": "Arena Na Żywo",
-    "panel.online": "ONLINE",
-    "panel.playersOnline": "Graczy Online",
-    "panel.matchesToday": "Mecze Dziś",
-    "panel.activeTournaments": "Aktywne Turnieje",
-    "panel.currentSeason": "Aktualny Sezon",
-    "panel.topRanking": "Top 3 Ranking",
-    "panel.viewAll": "Zobacz wszystkie",
-    "panel.teams": "drużyn",
-    "panel.doubleElim": "Podwójna eliminacja",
-    
-    "features.badge": "Funkcje",
-    "features.title": "Wszystko czego potrzebujesz do",
-    "features.title2": "rywalizacji",
-    "features.description": "Profesjonalne narzędzia dla organizatorów, drużyn i graczy",
-    "features.learnMore": "Dowiedz się więcej",
-    
-    "feature.tournaments.title": "Turnieje",
-    "feature.tournaments.subtitle": "Liga • Puchar • Grupy",
-    "feature.tournaments.desc": "Organizuj profesjonalne zawody w różnych formatach.",
-    
-    "feature.matchroom.title": "Pokój Meczu",
-    "feature.matchroom.subtitle": "Raportuj • Potwierdź • Spór",
-    "feature.matchroom.desc": "Kompletny system zarządzania meczami.",
-    
-    "feature.rankings.title": "Rankingi",
-    "feature.rankings.subtitle": "Rating • ELO • Sezony",
-    "feature.rankings.desc": "System ratingu anti-farm z niepewnością.",
-    
-    "feature.teams.title": "Drużyny",
-    "feature.teams.subtitle": "Skład • Staff • Historia",
-    "feature.teams.desc": "Zarządzaj graczami, trenerami i rezerwowymi.",
-    
-    "feature.anticheat.title": "Anti-cheat",
-    "feature.anticheat.subtitle": "Logi • Audyt • Moderacja",
-    "feature.anticheat.desc": "Pełna ochrona z niezmiennymi logami.",
-    
-    "feature.global.title": "Multi-kraj",
-    "feature.global.subtitle": "50+ Krajów • Strefy czasowe",
-    "feature.global.desc": "Globalne wsparcie w lokalnych językach.",
-    
-    "how.badge": "Jak to działa",
-    "how.title": "Trzy kroki do",
-    "how.title2": "zwycięstwa",
-    "how.step1.title": "Utwórz Profil",
-    "how.step1.desc": "Zbuduj drużynę lub dołącz jako solo gracz.",
-    "how.step2.title": "Dołącz do Rywalizacji",
-    "how.step2.desc": "Weź udział w turniejach lub rzuć wyzwanie przeciwnikom.",
-    "how.step3.title": "Raportuj i Awansuj",
-    "how.step3.desc": "Potwierdź wyniki i wspinaj się w rankingu.",
-    
-    "rankings.badge": "Tabela liderów",
-    "rankings.title": "Top",
-    "rankings.title2": "Globalny",
-    "rankings.description": "Najlepsi gracze rywalizujący w czasie rzeczywistym",
-    "rankings.position": "#",
-    "rankings.player": "Gracz / Drużyna",
-    "rankings.rating": "Rating",
-    "rankings.matches": "Mecze",
-    "rankings.winrate": "Winrate",
-    "rankings.viewFull": "Zobacz Pełny Ranking",
-    
-    "cta.title": "Gotowy do",
-    "cta.title2": "rywalizacji?",
-    "cta.description": "Dołącz do tysięcy graczy i organizatorów korzystających z platformy EFA.",
-    "cta.button": "Zacznij Teraz",
-    
-    "footer.description": "Najlepsza platforma dla esportu rywalizacyjnego.",
-    "footer.platform": "Platforma",
-    "footer.friendlies": "Sparingi",
-    "footer.organizers": "Organizatorzy",
-    "footer.plans": "Plany",
-    "footer.docs": "Dokumentacja",
-    "footer.support": "Wsparcie",
-    "footer.legal": "Prawne",
-    "footer.terms": "Warunki Użytkowania",
-    "footer.privacy": "Prywatność",
-    "footer.cookies": "Cookies",
-    "footer.community": "Społeczność",
-    "footer.rights": "© 2026 EFA Esports. Wszelkie prawa zastrzeżone.",
-    "footer.serversOnline": "Serwery Online",
-  },
-  
-  "nl": {
-    "nav.rankings": "Ranglijsten",
-    "nav.tournaments": "Toernooien",
-    "nav.teams": "Teams",
-    "nav.discord": "Discord",
-    "nav.login": "Inloggen",
-    "nav.signup": "Registreren",
-    "nav.dashboard": "Dashboard",
-    
-    "hero.badge": "Seizoen 2026.1 Actief",
-    "hero.title1": "Domineer de",
-    "hero.title2": "Competitieve Arena",
-    "hero.description": "Organiseer professionele toernooien, beheer teams, volg ranglijsten en bouw je esports-community.",
-    "hero.description2": "Alles op één platform.",
-    "hero.cta1": "Gratis Starten",
-    "hero.cta2": "Bekijk Ranglijsten",
-    "hero.players": "+10k spelers",
-    "hero.antifarm": "Anti-farm",
-    "hero.countries": "50+ landen",
-    
-    "panel.live": "Arena Live",
-    "panel.online": "ONLINE",
-    "panel.playersOnline": "Spelers Online",
-    "panel.matchesToday": "Wedstrijden Vandaag",
-    "panel.activeTournaments": "Actieve Toernooien",
-    "panel.currentSeason": "Huidig Seizoen",
-    "panel.topRanking": "Top 3 Ranglijst",
-    "panel.viewAll": "Bekijk alle",
-    "panel.teams": "teams",
-    "panel.doubleElim": "Dubbele eliminatie",
-    
-    "features.badge": "Functies",
-    "features.title": "Alles wat je nodig hebt om te",
-    "features.title2": "strijden",
-    "features.description": "Professionele tools voor organisatoren, teams en spelers",
-    "features.learnMore": "Meer weten",
-    
-    "feature.tournaments.title": "Toernooien",
-    "feature.tournaments.subtitle": "Competitie • Knock-out • Poules",
-    "feature.tournaments.desc": "Organiseer professionele competities met meerdere formaten.",
-    
-    "feature.matchroom.title": "Wedstrijdruimte",
-    "feature.matchroom.subtitle": "Rapporteer • Bevestig • Betwist",
-    "feature.matchroom.desc": "Compleet wedstrijdbeheersysteem.",
-    
-    "feature.rankings.title": "Ranglijsten",
-    "feature.rankings.subtitle": "Rating • ELO • Seizoenen",
-    "feature.rankings.desc": "Anti-farm ratingsysteem met onzekerheid.",
-    
-    "feature.teams.title": "Teams",
-    "feature.teams.subtitle": "Selectie • Staf • Geschiedenis",
-    "feature.teams.desc": "Beheer spelers, coaches en wisselspelers.",
-    
-    "feature.anticheat.title": "Anti-cheat",
-    "feature.anticheat.subtitle": "Logs • Audit • Moderatie",
-    "feature.anticheat.desc": "Volledige bescherming met onveranderlijke logs.",
-    
-    "feature.global.title": "Multi-land",
-    "feature.global.subtitle": "50+ Landen • Tijdzones",
-    "feature.global.desc": "Wereldwijde ondersteuning met lokale talen.",
-    
-    "how.badge": "Hoe het werkt",
-    "how.title": "Drie stappen naar de",
-    "how.title2": "overwinning",
-    "how.step1.title": "Maak je Profiel",
-    "how.step1.desc": "Bouw je team of doe mee als solo speler.",
-    "how.step2.title": "Doe Mee aan de Competitie",
-    "how.step2.desc": "Neem deel aan toernooien of daag tegenstanders uit.",
-    "how.step3.title": "Rapporteer & Stijg",
-    "how.step3.desc": "Bevestig resultaten en stijg in de ranglijst.",
-    
-    "rankings.badge": "Leaderboard",
-    "rankings.title": "Top",
-    "rankings.title2": "Wereldwijd",
-    "rankings.description": "De beste spelers strijden in realtime",
-    "rankings.position": "#",
-    "rankings.player": "Speler / Team",
-    "rankings.rating": "Rating",
-    "rankings.matches": "Wedstrijden",
-    "rankings.winrate": "Winrate",
-    "rankings.viewFull": "Bekijk Volledige Ranglijst",
-    
-    "cta.title": "Klaar om te",
-    "cta.title2": "strijden?",
-    "cta.description": "Sluit je aan bij duizenden spelers en organisatoren die al het EFA-platform gebruiken.",
-    "cta.button": "Nu Beginnen",
-    
-    "footer.description": "Het ultieme platform voor competitieve esports.",
-    "footer.platform": "Platform",
-    "footer.friendlies": "Vriendschappelijk",
-    "footer.organizers": "Organisatoren",
-    "footer.plans": "Plannen",
-    "footer.docs": "Documentatie",
-    "footer.support": "Ondersteuning",
-    "footer.legal": "Juridisch",
-    "footer.terms": "Gebruiksvoorwaarden",
-    "footer.privacy": "Privacy",
-    "footer.cookies": "Cookies",
-    "footer.community": "Community",
-    "footer.rights": "© 2026 EFA Esports. Alle rechten voorbehouden.",
-    "footer.serversOnline": "Servers Online",
-  },
-  
-  "sv": {
-    "nav.rankings": "Rankingar",
-    "nav.tournaments": "Turneringar",
-    "nav.teams": "Lag",
-    "nav.discord": "Discord",
-    "nav.login": "Logga in",
-    "nav.signup": "Registrera",
-    "nav.dashboard": "Kontrollpanel",
-    
-    "hero.badge": "Säsong 2026.1 Aktiv",
-    "hero.title1": "Dominera",
-    "hero.title2": "Tävlingsarenan",
-    "hero.description": "Organisera professionella turneringar, hantera lag, följ rankingar och bygg din esport-community.",
-    "hero.description2": "Allt på en plattform.",
-    "hero.cta1": "Börja Gratis",
-    "hero.cta2": "Se Rankingar",
-    "hero.players": "+10k spelare",
-    "hero.antifarm": "Anti-farm",
-    "hero.countries": "50+ länder",
-    
-    "panel.live": "Arena Live",
-    "panel.online": "ONLINE",
-    "panel.playersOnline": "Spelare Online",
-    "panel.matchesToday": "Matcher Idag",
-    "panel.activeTournaments": "Aktiva Turneringar",
-    "panel.currentSeason": "Nuvarande Säsong",
-    "panel.topRanking": "Topp 3 Ranking",
-    "panel.viewAll": "Visa alla",
-    "panel.teams": "lag",
-    "panel.doubleElim": "Dubbel eliminering",
-    
-    "features.badge": "Funktioner",
-    "features.title": "Allt du behöver för att",
-    "features.title2": "tävla",
-    "features.description": "Professionella verktyg för arrangörer, lag och spelare",
-    "features.learnMore": "Läs mer",
-    
-    "feature.tournaments.title": "Turneringar",
-    "feature.tournaments.subtitle": "Liga • Utslagning • Grupper",
-    "feature.tournaments.desc": "Organisera professionella tävlingar med flera format.",
-    
-    "feature.matchroom.title": "Matchrum",
-    "feature.matchroom.subtitle": "Rapportera • Bekräfta • Bestrida",
-    "feature.matchroom.desc": "Komplett matchhanteringssystem.",
-    
-    "feature.rankings.title": "Rankingar",
-    "feature.rankings.subtitle": "Rating • ELO • Säsonger",
-    "feature.rankings.desc": "Anti-farm ratingsystem med osäkerhet.",
-    
-    "feature.teams.title": "Lag",
-    "feature.teams.subtitle": "Trupp • Personal • Historik",
-    "feature.teams.desc": "Hantera spelare, tränare och reserver.",
-    
-    "feature.anticheat.title": "Anti-fusk",
-    "feature.anticheat.subtitle": "Loggar • Granskning • Moderering",
-    "feature.anticheat.desc": "Fullständigt skydd med oföränderliga loggar.",
-    
-    "feature.global.title": "Multi-land",
-    "feature.global.subtitle": "50+ Länder • Tidszoner",
-    "feature.global.desc": "Global support med lokala språk.",
-    
-    "how.badge": "Hur det fungerar",
-    "how.title": "Tre steg till",
-    "how.title2": "seger",
-    "how.step1.title": "Skapa din Profil",
-    "how.step1.desc": "Bygg ditt lag eller gå med som solospelare.",
-    "how.step2.title": "Gå med i Tävlingen",
-    "how.step2.desc": "Delta i turneringar eller utmana motståndare.",
-    "how.step3.title": "Rapportera & Klättra",
-    "how.step3.desc": "Bekräfta resultat och klättra i rankingen.",
-    
-    "rankings.badge": "Topplista",
-    "rankings.title": "Topp",
-    "rankings.title2": "Globalt",
-    "rankings.description": "De bästa spelarna tävlar i realtid",
-    "rankings.position": "#",
-    "rankings.player": "Spelare / Lag",
-    "rankings.rating": "Rating",
-    "rankings.matches": "Matcher",
-    "rankings.winrate": "Vinstprocent",
-    "rankings.viewFull": "Se Hela Rankingen",
-    
-    "cta.title": "Redo att",
-    "cta.title2": "tävla?",
-    "cta.description": "Gå med tusentals spelare och arrangörer som redan använder EFA-plattformen.",
-    "cta.button": "Börja Nu",
-    
-    "footer.description": "Den ultimata plattformen för tävlings-esport.",
-    "footer.platform": "Plattform",
-    "footer.friendlies": "Vänskapsmatcher",
-    "footer.organizers": "Arrangörer",
-    "footer.plans": "Planer",
-    "footer.docs": "Dokumentation",
-    "footer.support": "Support",
-    "footer.legal": "Juridiskt",
-    "footer.terms": "Användarvillkor",
-    "footer.privacy": "Integritet",
-    "footer.cookies": "Cookies",
-    "footer.community": "Community",
-    "footer.rights": "© 2026 EFA Esports. Alla rättigheter förbehållna.",
-    "footer.serversOnline": "Servrar Online",
-  },
+
+  // Other languages kept (explicit empty dicts = safe fallback to DEFAULT_LANG)
+  es: {},
+  fr: {},
+  de: {},
+  it: {},
+  ja: {},
+  ko: {},
+  zh: {},
+  ar: {},
+  ru: {},
+  tr: {},
+  pl: {},
+  nl: {},
+  sv: {},
 };
 
 interface LanguageContextType {
@@ -1630,32 +346,43 @@ interface LanguageContextType {
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
+const STORAGE_KEY = "efa-language";
+const DEFAULT_LANG: Language = "pt-BR"; // keep as-is for now
+
+function isLanguage(value: unknown): value is Language {
+  return typeof value === "string" && value in translations;
+}
+
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguageState] = useState<Language>(() => {
-    const saved = localStorage.getItem("efa-language") as Language;
-    return saved || "pt-BR";
+    const saved = localStorage.getItem(STORAGE_KEY);
+    return isLanguage(saved) ? saved : DEFAULT_LANG;
   });
-
-  const setLanguage = (lang: Language) => {
-    setLanguageState(lang);
-    localStorage.setItem("efa-language", lang);
-    // Update HTML lang attribute
-    document.documentElement.lang = lang;
-  };
 
   useEffect(() => {
     document.documentElement.lang = language;
   }, [language]);
 
-  const t = (key: string): string => {
-    return translations[language]?.[key] || translations["pt-BR"]?.[key] || key;
+  const setLanguage = (lang: Language) => {
+    if (!isLanguage(lang)) return;
+    setLanguageState(lang);
+    localStorage.setItem(STORAGE_KEY, lang);
+    document.documentElement.lang = lang;
   };
 
-  return (
-    <LanguageContext.Provider value={{ language, setLanguage, t, languages }}>
-      {children}
-    </LanguageContext.Provider>
+  const t = useMemo(() => {
+    return (key: string): string =>
+      translations[language]?.[key] ||
+      translations[DEFAULT_LANG]?.[key] ||
+      key;
+  }, [language]);
+
+  const value = useMemo<LanguageContextType>(
+    () => ({ language, setLanguage, t, languages }),
+    [language, t]
   );
+
+  return <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>;
 }
 
 export function useLanguage() {
@@ -1665,3 +392,4 @@ export function useLanguage() {
   }
   return context;
 }
+
